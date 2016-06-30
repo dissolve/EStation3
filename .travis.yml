@@ -15,9 +15,9 @@ addons:
         - libasound2-dev
         - libgl1-mesa-dev
         - build-essential
-        sources:
-        - libsdl2-dev
-        - libboost-locale-dev
+        - libsdl2-2.0.0
+      # - libsdl2-dev
+      # - libboost-locale-dev
 
 before_script: cmake .
 script: make
