@@ -19,5 +19,5 @@ addons:
         - libsdl2-dev
         - libboost-locale-dev
 
-before_script: cmake
+before_script: cmake .
 script: make
