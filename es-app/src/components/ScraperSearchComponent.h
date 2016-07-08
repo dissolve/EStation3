@@ -23,6 +23,7 @@ class ScraperSearchComponent : public GuiComponent
 public:
     enum SearchType {
         ALWAYS_ACCEPT_FIRST_RESULT,
+        ALWAYS_ACCEPT_SINGLE_RESULT,
         ALWAYS_ACCEPT_MATCHING_CRC,
         NEVER_AUTO_ACCEPT
     };

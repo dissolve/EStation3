@@ -91,7 +91,7 @@ void ScraperSearchComponent::onSizeChanged()
     }
 
     // column widths
-    if(mSearchType == ALWAYS_ACCEPT_FIRST_RESULT) {
+    if(mSearchType == ALWAYS_ACCEPT_SINGLE_RESULT) {
         mGrid.setColWidthPerc(0, 0.02f);    // looks better when this is higher in auto mode
     } else {
         mGrid.setColWidthPerc(0, 0.01f);
@@ -101,13 +101,13 @@ void ScraperSearchComponent::onSizeChanged()
     mGrid.setColWidthPerc(2, 0.25f);
 
     // row heights
-    if(mSearchType == ALWAYS_ACCEPT_FIRST_RESULT) { // show name
+    if(mSearchType == ALWAYS_ACCEPT_SINGLE_RESULT) { // show name
         mGrid.setRowHeightPerc(0, (mResultName->getFont()->getHeight() * 1.6f) / mGrid.getSize().y());    // result name
     } else {
         mGrid.setRowHeightPerc(0, 0.0825f);    // hide name but do padding
     }
 
-    if(mSearchType == ALWAYS_ACCEPT_FIRST_RESULT) {
+    if(mSearchType == ALWAYS_ACCEPT_SINGLE_RESULT) {
         mGrid.setRowHeightPerc(2, 0.2f);
     } else {
         mGrid.setRowHeightPerc(1, 0.505f);
@@ -122,7 +122,7 @@ void ScraperSearchComponent::onSizeChanged()
     // metadata
     resizeMetadata();
 
-    if(mSearchType != ALWAYS_ACCEPT_FIRST_RESULT) {
+    if(mSearchType != ALWAYS_ACCEPT_SINGLE_RESULT) {
         mDescContainer->setSize(mGrid.getColWidth(1)*boxartCellScale + mGrid.getColWidth(2), mResultDesc->getFont()->getHeight() * 3);
     } else {
         mDescContainer->setSize(mGrid.getColWidth(3)*boxartCellScale, mResultDesc->getFont()->getHeight() * 8);
@@ -185,7 +185,7 @@ void ScraperSearchComponent::updateViewStyle()
     mGrid.removeEntry(mResultList);
 
     // add them back depending on search type
-    if(mSearchType == ALWAYS_ACCEPT_FIRST_RESULT) {
+    if(mSearchType == ALWAYS_ACCEPT_SINGLE_RESULT) {
         // show name
         mGrid.setEntry(mResultName, Vector2i(1, 0), false, true, Vector2i(2, 1), GridFlags::BORDER_TOP);
 
@@ -267,6 +267,12 @@ void ScraperSearchComponent::onSearchDone(const std::vector<ScraperSearchResult>
             mSkipCallback();
         } else {
             returnResult(mScraperResults.front());
+        }
+    } else if(mSearchType == ALWAYS_ACCEPT_SINGLE_RESULT) {
+        if(mScraperResults.size() == 1) {
+            returnResult(mScraperResults.front());
+        } else {
+            mSkipCallback();
         }
     } else if(mSearchType == ALWAYS_ACCEPT_MATCHING_CRC) {
         // TODO

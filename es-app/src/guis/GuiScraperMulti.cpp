@@ -40,11 +40,11 @@ GuiScraperMulti::GuiScraperMulti(Window* window, const std::queue<ScraperSearchP
     mGrid.setEntry(mSubtitle, Vector2i(0, 2), false, true);
 
     mSearchComp = std::make_shared<ScraperSearchComponent>(mWindow,
-                  approveResults ? ScraperSearchComponent::ALWAYS_ACCEPT_MATCHING_CRC : ScraperSearchComponent::ALWAYS_ACCEPT_FIRST_RESULT);
+                  approveResults ? ScraperSearchComponent::ALWAYS_ACCEPT_MATCHING_CRC : ScraperSearchComponent::ALWAYS_ACCEPT_SINGLE_RESULT);
     mSearchComp->setAcceptCallback(std::bind(&GuiScraperMulti::acceptResult, this, std::placeholders::_1));
     mSearchComp->setSkipCallback(std::bind(&GuiScraperMulti::skip, this));
     mSearchComp->setCancelCallback(std::bind(&GuiScraperMulti::finish, this));
-    mGrid.setEntry(mSearchComp, Vector2i(0, 3), mSearchComp->getSearchType() != ScraperSearchComponent::ALWAYS_ACCEPT_FIRST_RESULT, true);
+    mGrid.setEntry(mSearchComp, Vector2i(0, 3), mSearchComp->getSearchType() != ScraperSearchComponent::ALWAYS_ACCEPT_SINGLE_RESULT, true);
 
     std::vector< std::shared_ptr<ButtonComponent> > buttons;
 
