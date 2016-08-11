@@ -7,14 +7,12 @@
 
 class SystemData;
 
-enum FileType
-{
+enum FileType {
 	GAME = 1,   // Cannot have children.
 	FOLDER = 2
 };
 
-enum FileChangeType
-{
+enum FileChangeType {
 	FILE_ADDED,
 	FILE_METADATA_CHANGED,
 	FILE_REMOVED,
@@ -35,13 +33,31 @@ public:
 	FileData(FileType type, const boost::filesystem::path& path, SystemData* system);
 	virtual ~FileData();
 
-	inline const std::string& getName() const { return metadata.get("name"); }
-	inline FileType getType() const { return mType; }
-	inline const boost::filesystem::path& getPath() const { return mPath; }
-	inline FileData* getParent() const { return mParent; }
-	inline const std::vector<FileData*>& getChildren() const { return mChildren; }
-	inline SystemData* getSystem() const { return mSystem; }
-	
+	inline const std::string& getName() const
+	{
+		return metadata.get("name");
+	}
+	inline FileType getType() const
+	{
+		return mType;
+	}
+	inline const boost::filesystem::path& getPath() const
+	{
+		return mPath;
+	}
+	inline FileData* getParent() const
+	{
+		return mParent;
+	}
+	inline const std::vector<FileData*>& getChildren() const
+	{
+		return mChildren;
+	}
+	inline SystemData* getSystem() const
+	{
+		return mSystem;
+	}
+
 	virtual const std::string& getThumbnailPath() const;
 
 	std::vector<FileData*> getFilesRecursive(unsigned int typeMask) const;
@@ -56,13 +72,12 @@ public:
 	std::string getCleanName() const;
 
 	typedef bool ComparisonFunction(const FileData* a, const FileData* b);
-	struct SortType
-	{
+	struct SortType {
 		ComparisonFunction* comparisonFunction;
 		bool ascending;
 		std::string description;
 
-		SortType(ComparisonFunction* sortFunction, bool sortAscending, const std::string & sortDescription) 
+		SortType(ComparisonFunction* sortFunction, bool sortAscending, const std::string & sortDescription)
 			: comparisonFunction(sortFunction), ascending(sortAscending), description(sortDescription) {}
 	};
 

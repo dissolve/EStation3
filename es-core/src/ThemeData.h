@@ -23,23 +23,22 @@ class Window;
 
 namespace ThemeFlags
 {
-	enum PropertyFlags : unsigned int
-	{
-		PATH = 1,
-		POSITION = 2,
-		SIZE = 4,
-		ORIGIN = 8,
-		COLOR = 16,
-		FONT_PATH = 32,
-		FONT_SIZE = 64,
-		SOUND = 128,
-		ALIGNMENT = 256,
-		TEXT = 512,
-		FORCE_UPPERCASE = 1024,
-		LINE_SPACING = 2048,
+enum PropertyFlags : unsigned int {
+	PATH = 1,
+	POSITION = 2,
+	SIZE = 4,
+	ORIGIN = 8,
+	COLOR = 16,
+	FONT_PATH = 32,
+	FONT_SIZE = 64,
+	SOUND = 128,
+	ALIGNMENT = 256,
+	TEXT = 512,
+	FORCE_UPPERCASE = 1024,
+	LINE_SPACING = 2048,
 
-		ALL = 0xFFFFFFFF
-	};
+	ALL = 0xFFFFFFFF
+};
 }
 
 class ThemeException : public std::exception
@@ -47,16 +46,20 @@ class ThemeException : public std::exception
 public:
 	std::string msg;
 
-	virtual const char* what() const throw() { return msg.c_str(); }
+	virtual const char* what() const throw()
+	{
+		return msg.c_str();
+	}
 
 	template<typename T>
 	friend ThemeException& operator<<(ThemeException& e, T msg);
-	
+
 	inline void setFiles(const std::deque<boost::filesystem::path>& deque)
 	{
 		*this << "from theme \"" << deque.front().string() << "\"\n";
-		for(auto it = deque.begin() + 1; it != deque.end(); it++)
+		for(auto it = deque.begin() + 1; it != deque.end(); it++) {
 			*this << "  (from included file \"" << (*it).string() << "\")\n";
+		}
 		*this << "    ";
 	}
 };
@@ -83,12 +86,17 @@ private:
 	std::vector<GuiComponent*> mExtras;
 };
 
-struct ThemeSet
-{
+struct ThemeSet {
 	boost::filesystem::path path;
 
-	inline std::string getName() const { return path.stem().string(); }
-	inline boost::filesystem::path getThemePath(const std::string& system) const { return path/system/"theme.xml"; }
+	inline std::string getName() const
+	{
+		return path.stem().string();
+	}
+	inline boost::filesystem::path getThemePath(const std::string& system) const
+	{
+		return path/system/"theme.xml";
+	}
 };
 
 class ThemeData
@@ -104,9 +112,15 @@ public:
 		std::map< std::string, boost::variant<Eigen::Vector2f, std::string, unsigned int, float, bool> > properties;
 
 		template<typename T>
-		T get(const std::string& prop) const { return boost::get<T>(properties.at(prop)); }
+		T get(const std::string& prop) const
+		{
+			return boost::get<T>(properties.at(prop));
+		}
 
-		inline bool has(const std::string& prop) const { return (properties.find(prop) != properties.end()); }
+		inline bool has(const std::string& prop) const
+		{
+			return (properties.find(prop) != properties.end());
+		}
 	};
 
 private:
@@ -124,8 +138,7 @@ public:
 	// throws ThemeException
 	void loadFile(const std::string& path);
 
-	enum ElementPropertyType
-	{
+	enum ElementPropertyType {
 		NORMALIZED_PAIR,
 		PATH,
 		STRING,

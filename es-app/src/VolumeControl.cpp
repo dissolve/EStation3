@@ -4,12 +4,12 @@
 
 
 #if defined(__linux__)
-    #ifdef _RPI_
-        const char * VolumeControl::mixerName = "PCM";
-    #else
-    	const char * VolumeControl::mixerName = "Master";
-    #endif
-    const char * VolumeControl::mixerCard = "default";
+#ifdef _RPI_
+const char * VolumeControl::mixerName = "PCM";
+#else
+const char * VolumeControl::mixerName = "Master";
+#endif
+const char * VolumeControl::mixerCard = "default";
 #endif
 
 std::weak_ptr<VolumeControl> VolumeControl::sInstance;
@@ -18,9 +18,9 @@ std::weak_ptr<VolumeControl> VolumeControl::sInstance;
 VolumeControl::VolumeControl()
 	: originalVolume(0), internalVolume(0)
 #if defined (__APPLE__)
-    #error TODO: Not implemented for MacOS yet!!!
+#error TODO: Not implemented for MacOS yet!!!
 #elif defined(__linux__)
-    , mixerIndex(0), mixerHandle(nullptr), mixerElem(nullptr), mixerSelemId(nullptr)
+	, mixerIndex(0), mixerHandle(nullptr), mixerElem(nullptr), mixerSelemId(nullptr)
 #elif defined(WIN32) || defined(_WIN32)
 	, mixerHandle(nullptr), endpointVolume(nullptr)
 #endif
@@ -68,68 +68,52 @@ void VolumeControl::init()
 {
 	//initialize audio mixer interface
 #if defined (__APPLE__)
-	#error TODO: Not implemented for MacOS yet!!!
+#error TODO: Not implemented for MacOS yet!!!
 #elif defined(__linux__)
 	//try to open mixer device
-	if (mixerHandle == nullptr)
-	{
+	if (mixerHandle == nullptr) {
 		snd_mixer_selem_id_alloca(&mixerSelemId);
 		//sets simple-mixer index and name
 		snd_mixer_selem_id_set_index(mixerSelemId, mixerIndex);
 		snd_mixer_selem_id_set_name(mixerSelemId, mixerName);
 		//open mixer
-		if (snd_mixer_open(&mixerHandle, 0) >= 0)
-		{
+		if (snd_mixer_open(&mixerHandle, 0) >= 0) {
 			LOG(LogDebug) << "VolumeControl::init() - Opened ALSA mixer";
 			//ok. attach to defualt card
-			if (snd_mixer_attach(mixerHandle, mixerCard) >= 0)
-			{
+			if (snd_mixer_attach(mixerHandle, mixerCard) >= 0) {
 				LOG(LogDebug) << "VolumeControl::init() - Attached to default card";
 				//ok. register simple element class
-				if (snd_mixer_selem_register(mixerHandle, NULL, NULL) >= 0)
-				{
+				if (snd_mixer_selem_register(mixerHandle, NULL, NULL) >= 0) {
 					LOG(LogDebug) << "VolumeControl::init() - Registered simple element class";
 					//ok. load registered elements
-					if (snd_mixer_load(mixerHandle) >= 0)
-					{
+					if (snd_mixer_load(mixerHandle) >= 0) {
 						LOG(LogDebug) << "VolumeControl::init() - Loaded mixer elements";
 						//ok. find elements now
 						mixerElem = snd_mixer_find_selem(mixerHandle, mixerSelemId);
-						if (mixerElem != nullptr)
-						{
+						if (mixerElem != nullptr) {
 							//wohoo. good to go...
 							LOG(LogDebug) << "VolumeControl::init() - Mixer initialized";
-						}
-						else
-						{
+						} else {
 							LOG(LogError) << "VolumeControl::init() - Failed to find mixer elements!";
 							snd_mixer_close(mixerHandle);
 							mixerHandle = nullptr;
 						}
-					}
-					else
-					{
+					} else {
 						LOG(LogError) << "VolumeControl::init() - Failed to load mixer elements!";
 						snd_mixer_close(mixerHandle);
 						mixerHandle = nullptr;
 					}
-				}
-				else
-				{
+				} else {
 					LOG(LogError) << "VolumeControl::init() - Failed to register simple element class!";
 					snd_mixer_close(mixerHandle);
 					mixerHandle = nullptr;
 				}
-			}
-			else
-			{
+			} else {
 				LOG(LogError) << "VolumeControl::init() - Failed to attach to default card!";
 				snd_mixer_close(mixerHandle);
 				mixerHandle = nullptr;
 			}
-		}
-		else
-		{
+		} else {
 			LOG(LogError) << "VolumeControl::init() - Failed to open ALSA mixer!";
 		}
 	}
@@ -138,13 +122,10 @@ void VolumeControl::init()
 	OSVERSIONINFOEXA osVer = {sizeof(OSVERSIONINFO)};
 	::GetVersionExA(reinterpret_cast<LPOSVERSIONINFOA>(&osVer));
 	//check windows version
-	if(osVer.dwMajorVersion < 6)
-	{
+	if(osVer.dwMajorVersion < 6) {
 		//Windows older than Vista. use mixer API. open default mixer
-		if (mixerHandle == nullptr)
-		{
-			if (mixerOpen(&mixerHandle, 0, NULL, 0, 0) == MMSYSERR_NOERROR)
-			{
+		if (mixerHandle == nullptr) {
+			if (mixerOpen(&mixerHandle, 0, NULL, 0, 0) == MMSYSERR_NOERROR) {
 				//retrieve info on the volume slider control for the "Speaker Out" line
 				MIXERLINECONTROLS mixerLineControls;
 				mixerLineControls.cbStruct = sizeof(MIXERLINECONTROLS);
@@ -154,52 +135,39 @@ void VolumeControl::init()
 				mixerLineControls.dwControlType = MIXERCONTROL_CONTROLTYPE_VOLUME; //Get volume control
 				mixerLineControls.pamxctrl = &mixerControl;
 				mixerLineControls.cbmxctrl = sizeof(MIXERCONTROL);
-				if (mixerGetLineControls((HMIXEROBJ)mixerHandle, &mixerLineControls, MIXER_GETLINECONTROLSF_ONEBYTYPE) != MMSYSERR_NOERROR)
-				{
+				if (mixerGetLineControls((HMIXEROBJ)mixerHandle, &mixerLineControls, MIXER_GETLINECONTROLSF_ONEBYTYPE) != MMSYSERR_NOERROR) {
 					LOG(LogError) << "VolumeControl::getVolume() - Failed to get mixer volume control!";
 					mixerClose(mixerHandle);
 					mixerHandle = nullptr;
 				}
-			}
-			else
-			{
+			} else {
 				LOG(LogError) << "VolumeControl::init() - Failed to open mixer!";
 			}
 		}
-	}
-	else 
-	{
+	} else {
 		//Windows Vista or above. use EndpointVolume API. get device enumerator
-		if (endpointVolume == nullptr)
-		{
+		if (endpointVolume == nullptr) {
 			CoInitialize(nullptr);
 			IMMDeviceEnumerator * deviceEnumerator = nullptr;
 			CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER, __uuidof(IMMDeviceEnumerator), (LPVOID *)&deviceEnumerator);
-			if (deviceEnumerator != nullptr)
-			{
+			if (deviceEnumerator != nullptr) {
 				//get default endpoint
 				IMMDevice * defaultDevice = nullptr;
 				deviceEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &defaultDevice);
-				if (defaultDevice != nullptr)
-				{
+				if (defaultDevice != nullptr) {
 					//retrieve endpoint volume
 					defaultDevice->Activate(__uuidof(IAudioEndpointVolume), CLSCTX_INPROC_SERVER, nullptr, (LPVOID *)&endpointVolume);
-					if (endpointVolume == nullptr)
-					{
+					if (endpointVolume == nullptr) {
 						LOG(LogError) << "VolumeControl::init() - Failed to get default audio endpoint volume!";
 					}
 					//release default device. we don't need it anymore
 					defaultDevice->Release();
-				}
-				else
-				{
+				} else {
 					LOG(LogError) << "VolumeControl::init() - Failed to get default audio endpoint!";
 				}
 				//release device enumerator. we don't need it anymore
 				deviceEnumerator->Release();
-			}
-			else
-			{
+			} else {
 				LOG(LogError) << "VolumeControl::init() - Failed to get audio endpoint enumerator!";
 				CoUninitialize();
 			}
@@ -212,7 +180,7 @@ void VolumeControl::deinit()
 {
 	//deinitialize audio mixer interface
 #if defined (__APPLE__)
-	#error TODO: Not implemented for MacOS yet!!!
+#error TODO: Not implemented for MacOS yet!!!
 #elif defined(__linux__)
 	if (mixerHandle != nullptr) {
 		snd_mixer_detach(mixerHandle, mixerCard);
@@ -225,8 +193,7 @@ void VolumeControl::deinit()
 	if (mixerHandle != nullptr) {
 		mixerClose(mixerHandle);
 		mixerHandle = nullptr;
-	}
-	else if (endpointVolume != nullptr) {
+	} else if (endpointVolume != nullptr) {
 		endpointVolume->Release();
 		endpointVolume = nullptr;
 		CoUninitialize();
@@ -239,40 +206,31 @@ int VolumeControl::getVolume() const
 	int volume = 0;
 
 #if defined (__APPLE__)
-    #error TODO: Not implemented for MacOS yet!!!
+#error TODO: Not implemented for MacOS yet!!!
 #elif defined(__linux__)
-	if (mixerElem != nullptr)
-	{
+	if (mixerElem != nullptr) {
 		//get volume range
 		long minVolume;
 		long maxVolume;
-		if (snd_mixer_selem_get_playback_volume_range(mixerElem, &minVolume, &maxVolume) == 0)
-		{
+		if (snd_mixer_selem_get_playback_volume_range(mixerElem, &minVolume, &maxVolume) == 0) {
 			//ok. now get volume
 			long rawVolume;
-			if (snd_mixer_selem_get_playback_volume(mixerElem, SND_MIXER_SCHN_MONO, &rawVolume) == 0)
-			{
+			if (snd_mixer_selem_get_playback_volume(mixerElem, SND_MIXER_SCHN_MONO, &rawVolume) == 0) {
 				//worked. bring into range 0-100
 				rawVolume -= minVolume;
-				if (rawVolume > 0)
-				{
+				if (rawVolume > 0) {
 					volume = (rawVolume * 100) / (maxVolume - minVolume);
 				}
 				//else volume = 0;
-			}
-			else
-			{
+			} else {
 				LOG(LogError) << "VolumeControl::getVolume() - Failed to get mixer volume!";
 			}
-		}
-		else
-		{
+		} else {
 			LOG(LogError) << "VolumeControl::getVolume() - Failed to get volume range!";
 		}
 	}
 #elif defined(WIN32) || defined(_WIN32)
-	if (mixerHandle != nullptr)
-	{
+	if (mixerHandle != nullptr) {
 		//Windows older than Vista. use mixer API. get volume from line control
 		MIXERCONTROLDETAILS_UNSIGNED value;
 		MIXERCONTROLDETAILS mixerControlDetails;
@@ -282,38 +240,28 @@ int VolumeControl::getVolume() const
 		mixerControlDetails.cMultipleItems = 0; //always 0 except for a MIXERCONTROL_CONTROLF_MULTIPLE control
 		mixerControlDetails.paDetails = &value;
 		mixerControlDetails.cbDetails = sizeof(MIXERCONTROLDETAILS_UNSIGNED);
-		if (mixerGetControlDetails((HMIXEROBJ)mixerHandle, &mixerControlDetails, MIXER_GETCONTROLDETAILSF_VALUE) == MMSYSERR_NOERROR) 
-		{
+		if (mixerGetControlDetails((HMIXEROBJ)mixerHandle, &mixerControlDetails, MIXER_GETCONTROLDETAILSF_VALUE) == MMSYSERR_NOERROR) {
 			volume = (uint8_t)round((value.dwValue * 100) / 65535);
-		}
-		else
-		{
+		} else {
 			LOG(LogError) << "VolumeControl::getVolume() - Failed to get mixer volume!";
 		}
-	}
-	else if (endpointVolume != nullptr)
-	{
+	} else if (endpointVolume != nullptr) {
 		//Windows Vista or above. use EndpointVolume API
 		float floatVolume = 0.0f; //0-1
-		if (endpointVolume->GetMasterVolumeLevelScalar(&floatVolume) == S_OK)
-		{
+		if (endpointVolume->GetMasterVolumeLevelScalar(&floatVolume) == S_OK) {
 			volume = (uint8_t)round(floatVolume * 100.0f);
 			LOG(LogInfo) << " getting volume as " << volume << " ( from float " << floatVolume << ")";
-		}
-		else
-		{
+		} else {
 			LOG(LogError) << "VolumeControl::getVolume() - Failed to get master volume!";
 		}
-		
+
 	}
 #endif
 	//clamp to 0-100 range
-	if (volume < 0)
-	{
+	if (volume < 0) {
 		volume = 0;
 	}
-	if (volume > 100)
-	{
+	if (volume > 100) {
 		volume = 100;
 	}
 	return volume;
@@ -322,42 +270,34 @@ int VolumeControl::getVolume() const
 void VolumeControl::setVolume(int volume)
 {
 	//clamp to 0-100 range
-	if (volume < 0)
-	{
+	if (volume < 0) {
 		volume = 0;
 	}
-	if (volume > 100)
-	{
+	if (volume > 100) {
 		volume = 100;
 	}
 	//store values in internal variables
 	internalVolume = volume;
 #if defined (__APPLE__)
-    #error TODO: Not implemented for MacOS yet!!!
+#error TODO: Not implemented for MacOS yet!!!
 #elif defined(__linux__)
-	if (mixerElem != nullptr)
-	{
+	if (mixerElem != nullptr) {
 		//get volume range
 		long minVolume;
 		long maxVolume;
-		if (snd_mixer_selem_get_playback_volume_range(mixerElem, &minVolume, &maxVolume) == 0)
-		{
+		if (snd_mixer_selem_get_playback_volume_range(mixerElem, &minVolume, &maxVolume) == 0) {
 			//ok. bring into minVolume-maxVolume range and set
 			long rawVolume = (volume * (maxVolume - minVolume) / 100) + minVolume;
-			if (snd_mixer_selem_set_playback_volume(mixerElem, SND_MIXER_SCHN_FRONT_LEFT, rawVolume) < 0 
-				|| snd_mixer_selem_set_playback_volume(mixerElem, SND_MIXER_SCHN_FRONT_RIGHT, rawVolume) < 0)
-			{
+			if (snd_mixer_selem_set_playback_volume(mixerElem, SND_MIXER_SCHN_FRONT_LEFT, rawVolume) < 0
+					|| snd_mixer_selem_set_playback_volume(mixerElem, SND_MIXER_SCHN_FRONT_RIGHT, rawVolume) < 0) {
 				LOG(LogError) << "VolumeControl::getVolume() - Failed to set mixer volume!";
 			}
-		}
-		else
-		{
+		} else {
 			LOG(LogError) << "VolumeControl::getVolume() - Failed to get volume range!";
 		}
 	}
 #elif defined(WIN32) || defined(_WIN32)
-	if (mixerHandle != nullptr)
-	{
+	if (mixerHandle != nullptr) {
 		//Windows older than Vista. use mixer API. get volume from line control
 		MIXERCONTROLDETAILS_UNSIGNED value;
 		value.dwValue = (volume * 65535) / 100;
@@ -368,20 +308,16 @@ void VolumeControl::setVolume(int volume)
 		mixerControlDetails.cMultipleItems = 0; //always 0 except for a MIXERCONTROL_CONTROLF_MULTIPLE control
 		mixerControlDetails.paDetails = &value;
 		mixerControlDetails.cbDetails = sizeof(MIXERCONTROLDETAILS_UNSIGNED);
-		if (mixerSetControlDetails((HMIXEROBJ)mixerHandle, &mixerControlDetails, MIXER_SETCONTROLDETAILSF_VALUE) != MMSYSERR_NOERROR)
-		{
+		if (mixerSetControlDetails((HMIXEROBJ)mixerHandle, &mixerControlDetails, MIXER_SETCONTROLDETAILSF_VALUE) != MMSYSERR_NOERROR) {
 			LOG(LogError) << "VolumeControl::setVolume() - Failed to set mixer volume!";
 		}
-	}
-	else if (endpointVolume != nullptr)
-	{
+	} else if (endpointVolume != nullptr) {
 		//Windows Vista or above. use EndpointVolume API
 		float floatVolume = 0.0f; //0-1
 		if (volume > 0) {
 			floatVolume = (float)volume / 100.0f;
 		}
-		if (endpointVolume->SetMasterVolumeLevelScalar(floatVolume, nullptr) != S_OK)
-		{
+		if (endpointVolume->SetMasterVolumeLevelScalar(floatVolume, nullptr) != S_OK) {
 			LOG(LogError) << "VolumeControl::setVolume() - Failed to set master volume!";
 		}
 	}

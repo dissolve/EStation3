@@ -3,8 +3,8 @@
 
 using namespace Eigen;
 
-GuiTextEditPopup::GuiTextEditPopup(Window* window, const std::string& title, const std::string& initValue, 
-	const std::function<void(const std::string&)>& okCallback, bool multiLine, const char* acceptBtnText)
+GuiTextEditPopup::GuiTextEditPopup(Window* window, const std::string& title, const std::string& initValue,
+								   const std::function<void(const std::string&)>& okCallback, bool multiLine, const char* acceptBtnText)
 	: GuiComponent(window), mBackground(window, ":/frame.png"), mGrid(window, Vector2i(1, 3)), mMultiLine(multiLine)
 {
 	addChild(&mBackground);
@@ -15,8 +15,9 @@ GuiTextEditPopup::GuiTextEditPopup(Window* window, const std::string& title, con
 	mText = std::make_shared<TextEditComponent>(mWindow);
 	mText->setValue(initValue);
 
-	if(!multiLine)
+	if(!multiLine) {
 		mText->setCursor(initValue.size());
+	}
 
 	std::vector< std::shared_ptr<ButtonComponent> > buttons;
 	buttons.push_back(std::make_shared<ButtonComponent>(mWindow, acceptBtnText, acceptBtnText, [this, okCallback] { okCallback(mText->getValue()); delete this; }));
@@ -29,8 +30,9 @@ GuiTextEditPopup::GuiTextEditPopup(Window* window, const std::string& title, con
 	mGrid.setEntry(mButtonGrid, Vector2i(0, 2), true, false);
 
 	float textHeight = mText->getFont()->getHeight();
-	if(multiLine)
+	if(multiLine) {
 		textHeight *= 6;
+	}
 	mText->setSize(0, textHeight);
 
 	setSize(Renderer::getScreenWidth() * 0.5f, mTitle->getFont()->getHeight() + textHeight + mButtonGrid->getSize().y() + 40);
@@ -51,12 +53,12 @@ void GuiTextEditPopup::onSizeChanged()
 
 bool GuiTextEditPopup::input(InputConfig* config, Input input)
 {
-	if(GuiComponent::input(config, input))
+	if(GuiComponent::input(config, input)) {
 		return true;
+	}
 
 	// pressing back when not text editing closes us
-	if(config->isMappedTo("b", input) && input.value)
-	{
+	if(config->isMappedTo("b", input) && input.value) {
 		delete this;
 		return true;
 	}

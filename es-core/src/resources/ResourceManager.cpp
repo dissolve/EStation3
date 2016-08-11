@@ -6,7 +6,10 @@
 
 namespace fs = boost::filesystem;
 
-auto array_deleter = [](unsigned char* p) { delete[] p; };
+auto array_deleter = [](unsigned char* p)
+{
+	delete[] p;
+};
 auto nop_deleter = [](unsigned char* p) { };
 
 std::shared_ptr<ResourceManager> ResourceManager::sInstance = nullptr;
@@ -17,8 +20,9 @@ ResourceManager::ResourceManager()
 
 std::shared_ptr<ResourceManager>& ResourceManager::getInstance()
 {
-	if(!sInstance)
+	if(!sInstance) {
 		sInstance = std::shared_ptr<ResourceManager>(new ResourceManager());
+	}
 
 	return sInstance;
 }
@@ -26,25 +30,23 @@ std::shared_ptr<ResourceManager>& ResourceManager::getInstance()
 const ResourceData ResourceManager::getFileData(const std::string& path) const
 {
 	//check if its embedded
-	
-	if(res2hMap.find(path) != res2hMap.end())
-	{
+
+	if(res2hMap.find(path) != res2hMap.end()) {
 		//it is
 		Res2hEntry embeddedEntry = res2hMap.find(path)->second;
-		ResourceData data = { 
-			std::shared_ptr<unsigned char>(const_cast<unsigned char*>(embeddedEntry.data), nop_deleter), 
+		ResourceData data = {
+			std::shared_ptr<unsigned char>(const_cast<unsigned char*>(embeddedEntry.data), nop_deleter),
 			embeddedEntry.size
 		};
 		return data;
 	}
 
 	//it's not embedded; load the file
-	if(!fs::exists(path))
-	{
+	if(!fs::exists(path)) {
 		//if the file doesn't exist, return an "empty" ResourceData
 		ResourceData data = {NULL, 0};
 		return data;
-	}else{
+	} else {
 		ResourceData data = loadFile(path);
 		return data;
 	}
@@ -70,8 +72,9 @@ ResourceData ResourceManager::loadFile(const std::string& path) const
 bool ResourceManager::fileExists(const std::string& path) const
 {
 	//if it exists as an embedded file, return true
-	if(res2hMap.find(path) != res2hMap.end())
+	if(res2hMap.find(path) != res2hMap.end()) {
 		return true;
+	}
 
 	return fs::exists(path);
 }
@@ -79,13 +82,11 @@ bool ResourceManager::fileExists(const std::string& path) const
 void ResourceManager::unloadAll()
 {
 	auto iter = mReloadables.begin();
-	while(iter != mReloadables.end())
-	{
-		if(!iter->expired())
-		{
+	while(iter != mReloadables.end()) {
+		if(!iter->expired()) {
 			iter->lock()->unload(sInstance);
 			iter++;
-		}else{
+		} else {
 			iter = mReloadables.erase(iter);
 		}
 	}
@@ -94,13 +95,11 @@ void ResourceManager::unloadAll()
 void ResourceManager::reloadAll()
 {
 	auto iter = mReloadables.begin();
-	while(iter != mReloadables.end())
-	{
-		if(!iter->expired())
-		{
+	while(iter != mReloadables.end()) {
+		if(!iter->expired()) {
 			iter->lock()->reload(sInstance);
 			iter++;
-		}else{
+		} else {
 			iter = mReloadables.erase(iter);
 		}
 	}

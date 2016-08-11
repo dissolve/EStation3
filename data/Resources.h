@@ -141,9 +141,9 @@ extern const size_t help_analog_right_svg_size;
 extern const unsigned char help_analog_right_svg_data[];
 
 struct Res2hEntry {
-    const std::string relativeFileName;
-    const size_t size;
-    const unsigned char * data;
+	const std::string relativeFileName;
+	const size_t size;
+	const unsigned char * data;
 };
 
 extern const size_t res2hNrOfFiles;

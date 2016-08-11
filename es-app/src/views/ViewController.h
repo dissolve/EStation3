@@ -21,7 +21,10 @@ public:
 	// If a basic view detected a metadata change, it can request to recreate
 	// the current gamelist view (as it may change to be detailed).
 	void reloadGameListView(IGameListView* gamelist, bool reloadTheme = false);
-	inline void reloadGameListView(SystemData* system, bool reloadTheme = false) { reloadGameListView(getGameListView(system).get(), reloadTheme); }
+	inline void reloadGameListView(SystemData* system, bool reloadTheme = false)
+	{
+		reloadGameListView(getGameListView(system).get(), reloadTheme);
+	}
 	void reloadAll(); // Reload everything with a theme.  Used when the "ThemeSet" setting changes.
 
 	// Navigation.
@@ -41,26 +44,31 @@ public:
 	void update(int deltaTime) override;
 	void render(const Eigen::Affine3f& parentTrans) override;
 
-	enum ViewMode
-	{
+	enum ViewMode {
 		NOTHING,
 		START_SCREEN,
 		SYSTEM_SELECT,
 		GAME_LIST
 	};
 
-	struct State
-	{
+	struct State {
 		ViewMode viewing;
 
-		inline SystemData* getSystem() const { assert(viewing == GAME_LIST || viewing == SYSTEM_SELECT); return system; }
+		inline SystemData* getSystem() const
+		{
+			assert(viewing == GAME_LIST || viewing == SYSTEM_SELECT);
+			return system;
+		}
 
 	private:
 		friend ViewController;
 		SystemData* system;
 	};
 
-	inline const State& getState() const { return mState; }
+	inline const State& getState() const
+	{
+		return mState;
+	}
 
 	virtual std::vector<HelpPrompt> getHelpPrompts() override;
 	virtual HelpStyle getHelpStyle() override;
@@ -74,11 +82,11 @@ private:
 
 	void playViewTransition();
 	int getSystemId(SystemData* system);
-	
+
 	std::shared_ptr<GuiComponent> mCurrentView;
 	std::map< SystemData*, std::shared_ptr<IGameListView> > mGameListViews;
 	std::shared_ptr<SystemView> mSystemListView;
-	
+
 	Eigen::Affine3f mCamera;
 	float mFadeOpacity;
 	bool mLockInput;

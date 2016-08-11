@@ -15,8 +15,7 @@ std::string getHomePath()
 
 	// this should give you something like "/home/YOUR_USERNAME" on Linux and "C:\Users\YOUR_USERNAME\" on Windows
 	const char * envHome = getenv("HOME");
-	if(envHome != nullptr)
-	{
+	if(envHome != nullptr) {
 		homePath = envHome;
 	}
 
@@ -30,8 +29,9 @@ std::string getHomePath()
 			homePath += envPath;
 
 			for(unsigned int i = 0; i < homePath.length(); i++)
-				if(homePath[i] == '\\')
+				if(homePath[i] == '\\') {
 					homePath[i] = '/';
+				}
 		}
 	}
 #endif
@@ -85,6 +85,7 @@ int quitES(const std::string& filename)
 void touch(const std::string& filename)
 {
 	int fd = open(filename.c_str(), O_CREAT|O_WRONLY, 0644);
-	if (fd >= 0)
+	if (fd >= 0) {
 		close(fd);
+	}
 }

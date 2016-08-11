@@ -21,7 +21,11 @@ public:
 
 	void onSizeChanged() override;
 
-	inline void addRow(const ComponentListRow& row, bool setCursorHere = false) { mList->addRow(row, setCursorHere); updateSize(); }
+	inline void addRow(const ComponentListRow& row, bool setCursorHere = false)
+	{
+		mList->addRow(row, setCursorHere);
+		updateSize();
+	}
 
 	inline void addWithLabel(const std::string& label, const std::shared_ptr<GuiComponent>& comp, bool setCursorHere = false, bool invert_when_selected = true)
 	{
@@ -35,8 +39,15 @@ public:
 
 	void setTitle(const char* title, const std::shared_ptr<Font>& font);
 
-	inline void setCursorToList() { mGrid.setCursorTo(mList); }
-	inline void setCursorToButtons() { assert(mButtonGrid); mGrid.setCursorTo(mButtonGrid); }
+	inline void setCursorToList()
+	{
+		mGrid.setCursorTo(mList);
+	}
+	inline void setCursorToButtons()
+	{
+		assert(mButtonGrid);
+		mGrid.setCursorTo(mButtonGrid);
+	}
 
 	virtual std::vector<HelpPrompt> getHelpPrompts() override;
 

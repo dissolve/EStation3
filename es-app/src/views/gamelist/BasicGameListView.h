@@ -16,7 +16,10 @@ public:
 	virtual FileData* getCursor() override;
 	virtual void setCursor(FileData* file) override;
 
-	virtual const char* getName() const override { return "basic"; }
+	virtual const char* getName() const override
+	{
+		return "basic";
+	}
 
 	virtual std::vector<HelpPrompt> getHelpPrompts() override;
 

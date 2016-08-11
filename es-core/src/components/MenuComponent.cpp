@@ -8,9 +8,9 @@
 
 using namespace Eigen;
 
-MenuComponent::MenuComponent(Window* window, const char* title, const std::shared_ptr<Font>& titleFont) : GuiComponent(window), 
+MenuComponent::MenuComponent(Window* window, const char* title, const std::shared_ptr<Font>& titleFont) : GuiComponent(window),
 	mBackground(window), mGrid(window, Vector2i(1, 3))
-{	
+{
 	addChild(&mBackground);
 	addChild(&mGrid);
 
@@ -48,17 +48,16 @@ void MenuComponent::updateSize()
 {
 	const float maxHeight = Renderer::getScreenHeight() * 0.7f;
 	float height = TITLE_HEIGHT + mList->getTotalRowHeight() + getButtonGridHeight() + 2;
-	if(height > maxHeight)
-	{
+	if(height > maxHeight) {
 		height = TITLE_HEIGHT + getButtonGridHeight();
 		int i = 0;
-		while(i < mList->size())
-		{
+		while(i < mList->size()) {
 			float rowHeight = mList->getRowHeight(i);
-			if(height + rowHeight < maxHeight)
+			if(height + rowHeight < maxHeight) {
 				height += rowHeight;
-			else
+			} else {
 				break;
+			}
 			i++;
 		}
 	}
@@ -73,7 +72,7 @@ void MenuComponent::onSizeChanged()
 	// update grid row/col sizes
 	mGrid.setRowHeightPerc(0, TITLE_HEIGHT / mSize.y());
 	mGrid.setRowHeightPerc(2, getButtonGridHeight() / mSize.y());
-	
+
 	mGrid.setSize(mSize);
 }
 
@@ -86,13 +85,13 @@ void MenuComponent::addButton(const std::string& name, const std::string& helpTe
 
 void MenuComponent::updateGrid()
 {
-	if(mButtonGrid)
+	if(mButtonGrid) {
 		mGrid.removeEntry(mButtonGrid);
+	}
 
 	mButtonGrid.reset();
 
-	if(mButtons.size())
-	{
+	if(mButtons.size()) {
 		mButtonGrid = makeButtonGrid(mWindow, mButtons);
 		mGrid.setEntry(mButtonGrid, Vector2i(0, 2), true, false);
 	}
@@ -108,16 +107,14 @@ std::shared_ptr<ComponentGrid> makeButtonGrid(Window* window, const std::vector<
 	std::shared_ptr<ComponentGrid> buttonGrid = std::make_shared<ComponentGrid>(window, Vector2i(buttons.size(), 2));
 
 	float buttonGridWidth = (float)BUTTON_GRID_HORIZ_PADDING * buttons.size(); // initialize to padding
-	for(int i = 0; i < (int)buttons.size(); i++)
-	{
+	for(int i = 0; i < (int)buttons.size(); i++) {
 		buttonGrid->setEntry(buttons.at(i), Vector2i(i, 0), true, false);
 		buttonGridWidth += buttons.at(i)->getSize().x();
 	}
-	for(unsigned int i = 0; i < buttons.size(); i++)
-	{
+	for(unsigned int i = 0; i < buttons.size(); i++) {
 		buttonGrid->setColWidthPerc(i, (buttons.at(i)->getSize().x() + BUTTON_GRID_HORIZ_PADDING) / buttonGridWidth);
 	}
-	
+
 	buttonGrid->setSize(buttonGridWidth, buttons.at(0)->getSize().y() + BUTTON_GRID_VERT_PADDING + 2);
 	buttonGrid->setRowHeightPerc(1, 2 / buttonGrid->getSize().y()); // spacer row to deal with dropshadow to make buttons look centered
 

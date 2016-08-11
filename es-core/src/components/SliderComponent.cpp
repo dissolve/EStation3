@@ -18,25 +18,25 @@ SliderComponent::SliderComponent(Window* window, float min, float max, float inc
 
 	mKnob.setOrigin(0.5f, 0.5f);
 	mKnob.setImage(":/slider_knob.svg");
-	
+
 	setSize(Renderer::getScreenWidth() * 0.15f, Font::get(FONT_SIZE_MEDIUM)->getLetterHeight());
 }
 
 bool SliderComponent::input(InputConfig* config, Input input)
 {
-	if(config->isMappedTo("left", input))
-	{
-		if(input.value)
+	if(config->isMappedTo("left", input)) {
+		if(input.value) {
 			setValue(mValue - mSingleIncrement);
+		}
 
 		mMoveRate = input.value ? -mSingleIncrement : 0;
 		mMoveAccumulator = -MOVE_REPEAT_DELAY;
 		return true;
 	}
-	if(config->isMappedTo("right", input))
-	{
-		if(input.value)
+	if(config->isMappedTo("right", input)) {
+		if(input.value) {
 			setValue(mValue + mSingleIncrement);
+		}
 
 		mMoveRate = input.value ? mSingleIncrement : 0;
 		mMoveAccumulator = -MOVE_REPEAT_DELAY;
@@ -48,16 +48,14 @@ bool SliderComponent::input(InputConfig* config, Input input)
 
 void SliderComponent::update(int deltaTime)
 {
-	if(mMoveRate != 0)
-	{
+	if(mMoveRate != 0) {
 		mMoveAccumulator += deltaTime;
-		while(mMoveAccumulator >= MOVE_REPEAT_RATE)
-		{
+		while(mMoveAccumulator >= MOVE_REPEAT_RATE) {
 			setValue(mValue + mMoveRate);
 			mMoveAccumulator -= MOVE_REPEAT_RATE;
 		}
 	}
-	
+
 	GuiComponent::update(deltaTime);
 }
 
@@ -67,8 +65,9 @@ void SliderComponent::render(const Eigen::Affine3f& parentTrans)
 	Renderer::setMatrix(trans);
 
 	// render suffix
-	if(mValueCache)
+	if(mValueCache) {
 		mFont->renderTextCache(mValueCache.get());
+	}
 
 	float width = mSize.x() - mKnob.getSize().x() - (mValueCache ? mValueCache->metrics.size.x() + 4 : 0);
 
@@ -78,17 +77,18 @@ void SliderComponent::render(const Eigen::Affine3f& parentTrans)
 
 	//render knob
 	mKnob.render(trans);
-	
+
 	GuiComponent::renderChildren(trans);
 }
 
 void SliderComponent::setValue(float value)
 {
 	mValue = value;
-	if(mValue < mMin)
+	if(mValue < mMin) {
 		mValue = mMin;
-	else if(mValue > mMax)
+	} else if(mValue > mMax) {
 		mValue = mMax;
+	}
 
 	onValueChanged();
 }
@@ -100,17 +100,17 @@ float SliderComponent::getValue()
 
 void SliderComponent::onSizeChanged()
 {
-	if(!mSuffix.empty())
+	if(!mSuffix.empty()) {
 		mFont = Font::get((int)(mSize.y()), FONT_PATH_LIGHT);
-	
+	}
+
 	onValueChanged();
 }
 
 void SliderComponent::onValueChanged()
 {
 	// update suffix textcache
-	if(mFont)
-	{
+	if(mFont) {
 		std::stringstream ss;
 		ss << std::fixed;
 		ss.precision(0);

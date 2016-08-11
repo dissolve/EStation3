@@ -8,8 +8,7 @@
 class DateTimeComponent : public GuiComponent
 {
 public:
-	enum DisplayMode
-	{
+	enum DisplayMode {
 		DISP_DATE,
 		DISP_DATE_TIME,
 		DISP_RELATIVE_TO_NOW
@@ -43,7 +42,7 @@ private:
 
 	std::string getDisplayString(DisplayMode mode) const;
 	DisplayMode getCurrentDisplayMode() const;
-	
+
 	void updateTextCache();
 
 	boost::posix_time::ptime mTime;

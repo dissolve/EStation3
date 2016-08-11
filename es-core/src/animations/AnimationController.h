@@ -14,13 +14,31 @@ public:
 	// Returns true if the animation is complete.
 	bool update(int deltaTime);
 
-	inline bool isReversed() const { return mReverse; }
-	inline int getTime() const { return mTime; }
-	inline int getDelay() const { return mDelay; }
-	inline const std::function<void()>& getFinishedCallback() const { return mFinishedCallback; }
-	inline Animation* getAnimation() const { return mAnimation; }
+	inline bool isReversed() const
+	{
+		return mReverse;
+	}
+	inline int getTime() const
+	{
+		return mTime;
+	}
+	inline int getDelay() const
+	{
+		return mDelay;
+	}
+	inline const std::function<void()>& getFinishedCallback() const
+	{
+		return mFinishedCallback;
+	}
+	inline Animation* getAnimation() const
+	{
+		return mAnimation;
+	}
 
-	inline void removeFinishedCallback() { mFinishedCallback = nullptr; }
+	inline void removeFinishedCallback()
+	{
+		mFinishedCallback = nullptr;
+	}
 
 private:
 	Animation* mAnimation;

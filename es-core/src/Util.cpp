@@ -7,15 +7,17 @@ namespace fs = boost::filesystem;
 std::string strToUpper(const char* from)
 {
 	std::string str(from);
-	for(unsigned int i = 0; i < str.size(); i++)
+	for(unsigned int i = 0; i < str.size(); i++) {
 		str[i] = toupper(from[i]);
+	}
 	return str;
 }
 
 std::string& strToUpper(std::string& str)
 {
-	for(unsigned int i = 0; i < str.size(); i++)
+	for(unsigned int i = 0; i < str.size(); i++) {
 		str[i] = toupper(str[i]);
+	}
 
 	return str;
 }
@@ -67,8 +69,9 @@ Eigen::Vector2f roundVector(const Eigen::Vector2f& vec)
 // embedded resources, e.g. ":/font.ttf", need to be properly handled too
 std::string getCanonicalPath(const std::string& path)
 {
-	if(path.empty() || !boost::filesystem::exists(path))
+	if(path.empty() || !boost::filesystem::exists(path)) {
 		return path;
+	}
 
 	return boost::filesystem::canonical(path).generic_string();
 }
@@ -78,22 +81,23 @@ std::string getCanonicalPath(const std::string& path)
 fs::path resolvePath(const fs::path& path, const fs::path& relativeTo, bool allowHome)
 {
 	// nothing here
-	if(path.begin() == path.end())
+	if(path.begin() == path.end()) {
 		return path;
+	}
 
-	if(*path.begin() == ".")
-	{
+	if(*path.begin() == ".") {
 		fs::path ret = relativeTo;
-		for(auto it = ++path.begin(); it != path.end(); ++it)
+		for(auto it = ++path.begin(); it != path.end(); ++it) {
 			ret /= *it;
+		}
 		return ret;
 	}
 
-	if(allowHome && *path.begin() == "~")
-	{
+	if(allowHome && *path.begin() == "~") {
 		fs::path ret = getHomePath();
-		for(auto it = ++path.begin(); it != path.end(); ++it)
+		for(auto it = ++path.begin(); it != path.end(); ++it) {
 			ret /= *it;
+		}
 		return ret;
 	}
 
@@ -104,8 +108,7 @@ fs::path resolvePath(const fs::path& path, const fs::path& relativeTo, bool allo
 fs::path removeCommonPath(const fs::path& path, const fs::path& relativeTo, bool& contains)
 {
 	// if either of these doesn't exist, fs::canonical() is going to throw an error
-	if(!fs::exists(path) || !fs::exists(relativeTo))
-	{
+	if(!fs::exists(path) || !fs::exists(relativeTo)) {
 		contains = false;
 		return path;
 	}
@@ -114,8 +117,7 @@ fs::path removeCommonPath(const fs::path& path, const fs::path& relativeTo, bool
 	fs::path p = (fs::is_symlink(path) ? fs::canonical(path.parent_path()) / path.filename() : fs::canonical(path));
 	fs::path r = fs::canonical(relativeTo);
 
-	if(p.root_path() != r.root_path())
-	{
+	if(p.root_path() != r.root_path()) {
 		contains = false;
 		return p;
 	}
@@ -125,22 +127,20 @@ fs::path removeCommonPath(const fs::path& path, const fs::path& relativeTo, bool
 	// find point of divergence
 	auto itr_path = p.begin();
 	auto itr_relative_to = r.begin();
-	while(*itr_path == *itr_relative_to && itr_path != p.end() && itr_relative_to != r.end())
-	{
+	while(*itr_path == *itr_relative_to && itr_path != p.end() && itr_relative_to != r.end()) {
 		++itr_path;
 		++itr_relative_to;
 	}
 
-	if(itr_relative_to != r.end())
-	{
+	if(itr_relative_to != r.end()) {
 		contains = false;
 		return p;
 	}
 
-	while(itr_path != p.end())
-	{
-		if(*itr_path != fs::path("."))
+	while(itr_path != p.end()) {
+		if(*itr_path != fs::path(".")) {
 			result = result / *itr_path;
+		}
 
 		++itr_path;
 	}
@@ -156,20 +156,17 @@ fs::path makeRelativePath(const fs::path& path, const fs::path& relativeTo, bool
 	bool contains = false;
 
 	fs::path ret = removeCommonPath(path, relativeTo, contains);
-	if(contains)
-	{
+	if(contains) {
 		// success
 		ret = "." / ret;
 		return ret;
 	}
 
-	if(allowHome)
-	{
+	if(allowHome) {
 		contains = false;
 		std::string homePath = getHomePath();
 		ret = removeCommonPath(path, homePath, contains);
-		if(contains)
-		{
+		if(contains) {
 			// success
 			ret = "~" / ret;
 			return ret;

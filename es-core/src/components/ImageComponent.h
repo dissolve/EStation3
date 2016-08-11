@@ -27,20 +27,29 @@ public:
 
 	//Sets the origin as a percentage of this image (e.g. (0, 0) is top left, (0.5, 0.5) is the center)
 	void setOrigin(float originX, float originY);
-	inline void setOrigin(Eigen::Vector2f origin) { setOrigin(origin.x(), origin.y()); }
+	inline void setOrigin(Eigen::Vector2f origin)
+	{
+		setOrigin(origin.x(), origin.y());
+	}
 
 	// Resize the image to fit this size. If one axis is zero, scale that axis to maintain aspect ratio.
 	// If both are non-zero, potentially break the aspect ratio.  If both are zero, no resizing.
 	// Can be set before or after an image is loaded.
 	// setMaxSize() and setResize() are mutually exclusive.
 	void setResize(float width, float height);
-	inline void setResize(const Eigen::Vector2f& size) { setResize(size.x(), size.y()); }
+	inline void setResize(const Eigen::Vector2f& size)
+	{
+		setResize(size.x(), size.y());
+	}
 
 	// Resize the image to be as large as possible but fit within a box of this size.
 	// Can be set before or after an image is loaded.
 	// Never breaks the aspect ratio. setMaxSize() and setResize() are mutually exclusive.
 	void setMaxSize(float width, float height);
-	inline void setMaxSize(const Eigen::Vector2f& size) { setMaxSize(size.x(), size.y()); }
+	inline void setMaxSize(const Eigen::Vector2f& size)
+	{
+		setMaxSize(size.x(), size.y());
+	}
 
 	// Multiply all pixels in the image by this color when rendering.
 	void setColorShift(unsigned int color);
@@ -71,8 +80,7 @@ private:
 	// Used internally whenever the resizing parameters or texture change.
 	void resize();
 
-	struct Vertex
-	{
+	struct Vertex {
 		Eigen::Vector2f pos;
 		Eigen::Vector2f tex;
 	} mVertices[6];

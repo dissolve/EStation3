@@ -3,13 +3,14 @@
 #include "pugixml/pugixml.hpp"
 
 void thearchive_generate_scraper_requests(const ScraperSearchParams& params, std::queue< std::unique_ptr<ScraperRequest> >& requests,
-	std::vector<ScraperSearchResult>& results)
+		std::vector<ScraperSearchResult>& results)
 {
 	std::string path = "api.archive.vg/2.0/Archive.search/xml/7TTRM4MNTIKR2NNAGASURHJOZJ3QXQC5/";
 
 	std::string cleanName = params.nameOverride;
-	if(cleanName.empty())
+	if(cleanName.empty()) {
 		cleanName = params.game->getCleanName();
+	}
 
 	path += HttpReq::urlEncode(cleanName);
 	//platform TODO, should use some params.system get method
@@ -23,8 +24,7 @@ void TheArchiveRequest::process(const std::unique_ptr<HttpReq>& req, std::vector
 
 	pugi::xml_document doc;
 	pugi::xml_parse_result parseResult = doc.load(req->getContent().c_str());
-	if(!parseResult)
-	{
+	if(!parseResult) {
 		std::stringstream ss;
 		ss << "TheArchiveRequest - error parsing XML.\n\t" << parseResult.description();
 		std::string err = ss.str();
@@ -36,8 +36,7 @@ void TheArchiveRequest::process(const std::unique_ptr<HttpReq>& req, std::vector
 	pugi::xml_node data = doc.child("OpenSearchDescription").child("games");
 
 	pugi::xml_node game = data.child("game");
-	while(game && results.size() < MAX_SCRAPER_RESULTS)
-	{
+	while(game && results.size() < MAX_SCRAPER_RESULTS) {
 		ScraperSearchResult result;
 
 		result.mdl.set("name", game.child("title").text().get());
@@ -55,10 +54,12 @@ void TheArchiveRequest::process(const std::unique_ptr<HttpReq>& req, std::vector
 		pugi::xml_node image = game.child("box_front");
 		pugi::xml_node thumbnail = game.child("box_front_small");
 
-		if(image)
+		if(image) {
 			result.imageUrl = image.text().get();
-		if(thumbnail)
+		}
+		if(thumbnail) {
 			result.thumbnailUrl = thumbnail.text().get();
+		}
 
 		results.push_back(result);
 		game = game.next_sibling("game");

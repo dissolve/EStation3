@@ -18,12 +18,12 @@ public:
 
 	virtual void unload(std::shared_ptr<ResourceManager>& rm) override;
 	virtual void reload(std::shared_ptr<ResourceManager>& rm) override;
-	
+
 	bool isInitialized() const;
 	bool isTiled() const;
 	const Eigen::Vector2i& getSize() const;
 	void bind() const;
-	
+
 	// Warning: will NOT correctly reinitialize when this texture is reloaded (e.g. ES starts/stops playing a game).
 	virtual void initFromMemory(const char* file, size_t length);
 

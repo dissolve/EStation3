@@ -9,8 +9,7 @@
 //Allow loading resources embedded into the executable like an actual file.
 //Allow embedded resources to be optionally remapped to actual files for further customization.
 
-struct ResourceData
-{
+struct ResourceData {
 	const std::shared_ptr<unsigned char> ptr;
 	const size_t length;
 };

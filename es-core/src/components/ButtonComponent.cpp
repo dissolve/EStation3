@@ -6,9 +6,9 @@
 
 ButtonComponent::ButtonComponent(Window* window, const std::string& text, const std::string& helpText, const std::function<void()>& func) : GuiComponent(window),
 	mBox(window, ":/button.png"),
-	mFont(Font::get(FONT_SIZE_MEDIUM)), 
-	mFocused(false), 
-	mEnabled(true), 
+	mFont(Font::get(FONT_SIZE_MEDIUM)),
+	mFocused(false),
+	mEnabled(true),
 	mTextColorFocused(0xFFFFFFFF), mTextColorUnfocused(0x777777FF)
 {
 	setPressedFunc(func);
@@ -28,10 +28,10 @@ void ButtonComponent::setPressedFunc(std::function<void()> f)
 
 bool ButtonComponent::input(InputConfig* config, Input input)
 {
-	if(config->isMappedTo("a", input) && input.value != 0)
-	{
-		if(mPressedFunc && mEnabled)
+	if(config->isMappedTo("a", input) && input.value != 0) {
+		if(mPressedFunc && mEnabled) {
 			mPressedFunc();
+		}
 		return true;
 	}
 
@@ -42,7 +42,7 @@ void ButtonComponent::setText(const std::string& text, const std::string& helpTe
 {
 	mText = strToUpper(text);
 	mHelpText = helpText;
-	
+
 	mTextCache = std::unique_ptr<TextCache>(mFont->buildTextCache(mText, 0, 0, getCurTextColor()));
 
 	float minWidth = mFont->sizeText("DELETE").x() + 12;
@@ -71,8 +71,7 @@ void ButtonComponent::setEnabled(bool enabled)
 
 void ButtonComponent::updateImage()
 {
-	if(!mEnabled || !mPressedFunc)
-	{
+	if(!mEnabled || !mPressedFunc) {
 		mBox.setImagePath(":/button_filled.png");
 		mBox.setCenterColor(0x770000FF);
 		mBox.setEdgeColor(0x770000FF);
@@ -87,11 +86,10 @@ void ButtonComponent::updateImage()
 void ButtonComponent::render(const Eigen::Affine3f& parentTrans)
 {
 	Eigen::Affine3f trans = roundMatrix(parentTrans * getTransform());
-	
+
 	mBox.render(trans);
 
-	if(mTextCache)
-	{
+	if(mTextCache) {
 		Eigen::Vector3f centerOffset((mSize.x() - mTextCache->metrics.size.x()) / 2, (mSize.y() - mTextCache->metrics.size.y()) / 2, 0);
 		centerOffset = roundVector(centerOffset);
 		trans = trans.translate(centerOffset);
@@ -107,10 +105,11 @@ void ButtonComponent::render(const Eigen::Affine3f& parentTrans)
 
 unsigned int ButtonComponent::getCurTextColor() const
 {
-	if(!mFocused)
+	if(!mFocused) {
 		return mTextColorUnfocused;
-	else
+	} else {
 		return mTextColorFocused;
+	}
 }
 
 std::vector<HelpPrompt> ButtonComponent::getHelpPrompts()

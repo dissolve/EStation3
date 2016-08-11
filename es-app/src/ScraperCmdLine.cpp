@@ -30,8 +30,7 @@ int run_scraper_cmdline()
 	//==================================================================================
 	//filter
 	//==================================================================================
-	enum FilterChoice
-	{
+	enum FilterChoice {
 		FILTER_MISSING_IMAGES,
 		FILTER_ALL
 	};
@@ -59,51 +58,49 @@ int run_scraper_cmdline()
 
 	std::string system_choice;
 	std::getline(std::cin, system_choice);
-	
-	if(system_choice == "y" || system_choice == "Y")
-	{
+
+	if(system_choice == "y" || system_choice == "Y") {
 		out << "Will scrape all platforms.\n";
-		for(auto i = SystemData::sSystemVector.begin(); i != SystemData::sSystemVector.end(); i++)
-		{
+		for(auto i = SystemData::sSystemVector.begin(); i != SystemData::sSystemVector.end(); i++) {
 			out << "   " << (*i)->getName() << " (" << (*i)->getGameCount() << " games)\n";
 			systems.push_back(*i);
 		}
 
-	}else{
+	} else {
 		std::string sys_name;
 
 		out << "Enter the names of the platforms you would like to scrape, one at a time.\n";
 		out << "Type nothing and press enter when you are ready to continue.\n";
 
 		do {
-			for(auto i = SystemData::sSystemVector.begin(); i != SystemData::sSystemVector.end(); i++)
-			{
-				if(std::find(systems.begin(), systems.end(), (*i)) != systems.end())
+			for(auto i = SystemData::sSystemVector.begin(); i != SystemData::sSystemVector.end(); i++) {
+				if(std::find(systems.begin(), systems.end(), (*i)) != systems.end()) {
 					out << " C ";
-				else
+				} else {
 					out << "   ";
+				}
 
 				out << "\"" << (*i)->getName() << "\" (" << (*i)->getGameCount() << " games)\n";
 			}
 
 			std::getline(std::cin, sys_name);
-			
-			if(sys_name.empty())
+
+			if(sys_name.empty()) {
 				break;
+			}
 
 			bool found = false;
-			for(auto i = SystemData::sSystemVector.begin(); i != SystemData::sSystemVector.end(); i++)
-			{
-				if((*i)->getName() == sys_name)
-				{
+			for(auto i = SystemData::sSystemVector.begin(); i != SystemData::sSystemVector.end(); i++) {
+				if((*i)->getName() == sys_name) {
 					systems.push_back(*i);
 					found = true;
 					break;
 				}
 			}
 
-			if(!found)
+			if(!found) {
 				out << "System not found.\n";
+			}
 
 		} while(true);
 	}
@@ -123,11 +120,10 @@ int run_scraper_cmdline()
 
 	bool manual_mode = false;
 
-	if(manual_mode_str == "y" || manual_mode_str == "Y")
-	{
+	if(manual_mode_str == "y" || manual_mode_str == "Y") {
 		manual_mode = true;
 		out << "Scraping in manual mode!\n";
-	}else{
+	} else {
 		out << "Scraping in automatic mode!\n";
 	}
 
@@ -204,7 +200,7 @@ int run_scraper_cmdline()
 
 					int choice = -1;
 					std::string choice_str;
-					
+
 					out << "Your choice: ";
 
 					std::getline(std::cin, choice_str);

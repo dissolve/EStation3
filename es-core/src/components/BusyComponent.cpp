@@ -34,8 +34,9 @@ void BusyComponent::onSizeChanged()
 {
 	mGrid.setSize(mSize);
 
-	if(mSize.x() == 0 || mSize.y() == 0)
+	if(mSize.x() == 0 || mSize.y() == 0) {
 		return;
+	}
 
 	const float middleSpacerWidth = 0.01f * Renderer::getScreenWidth();
 	const float textHeight = mText->getFont()->getLetterHeight();
@@ -47,9 +48,9 @@ void BusyComponent::onSizeChanged()
 	mGrid.setColWidthPerc(3, textWidth / mSize.x());
 
 	mGrid.setRowHeightPerc(1, textHeight / mSize.y());
-	
+
 	mBackground.fitTo(Vector2f(mGrid.getColWidth(1) + mGrid.getColWidth(2) + mGrid.getColWidth(3), textHeight + 2),
-		mAnimation->getPosition(), Vector2f(0, 0));
+					  mAnimation->getPosition(), Vector2f(0, 0));
 }
 
 void BusyComponent::reset()

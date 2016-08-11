@@ -20,8 +20,7 @@ class TextCache;
 
 typedef unsigned long UnicodeChar;
 
-enum Alignment
-{
+enum Alignment {
 	ALIGN_LEFT,
 	ALIGN_CENTER, // centers both horizontally and vertically
 	ALIGN_RIGHT
@@ -42,7 +41,7 @@ public:
 	TextCache* buildTextCache(const std::string& text, float offsetX, float offsetY, unsigned int color);
 	TextCache* buildTextCache(const std::string& text, Eigen::Vector2f offset, unsigned int color, float xLen, Alignment alignment = ALIGN_LEFT, float lineSpacing = 1.5f);
 	void renderTextCache(TextCache* cache);
-	
+
 	std::string wrapText(std::string text, float xLen); // Inserts newlines into text to make it wrap properly.
 	Eigen::Vector2f sizeWrappedText(std::string text, float xLen, float lineSpacing = 1.5f); // Returns the expected size of a string after wrapping is applied.
 	Eigen::Vector2f getWrappedTextCursorOffset(std::string text, float xLen, size_t cursor, float lineSpacing = 1.5f); // Returns the position of of the cursor after moving "cursor" characters.
@@ -54,9 +53,15 @@ public:
 	void reload(std::shared_ptr<ResourceManager>& rm) override;
 
 	int getSize() const;
-	inline const std::string& getPath() const { return mPath; }
+	inline const std::string& getPath() const
+	{
+		return mPath;
+	}
 
-	inline static const char* getDefaultPath() { return FONT_PATH_REGULAR; }
+	inline static const char* getDefaultPath()
+	{
+		return FONT_PATH_REGULAR;
+	}
 
 	static std::shared_ptr<Font> getFromTheme(const ThemeData::ThemeElement* elem, unsigned int properties, const std::shared_ptr<Font>& orig);
 
@@ -75,8 +80,7 @@ private:
 
 	Font(int size, const std::string& path);
 
-	struct FontTexture
-	{
+	struct FontTexture {
 		GLuint textureId;
 		Eigen::Vector2i textureSize;
 
@@ -92,8 +96,7 @@ private:
 		void deinitTexture(); // deinitializes the OpenGL texture if any exists, is automatically called in the destructor
 	};
 
-	struct FontFace
-	{
+	struct FontFace {
 		const ResourceData data;
 		FT_Face face;
 
@@ -112,10 +115,9 @@ private:
 	FT_Face getFaceForChar(UnicodeChar id);
 	void clearFaceCache();
 
-	struct Glyph
-	{
+	struct Glyph {
 		FontTexture* texture;
-		
+
 		Eigen::Vector2f texPos;
 		Eigen::Vector2f texSize; // in texels!
 
@@ -128,7 +130,7 @@ private:
 	Glyph* getGlyph(UnicodeChar id);
 
 	int mMaxGlyphHeight;
-	
+
 	const int mSize;
 	const std::string mPath;
 
@@ -144,14 +146,12 @@ private:
 class TextCache
 {
 protected:
-	struct Vertex
-	{
+	struct Vertex {
 		Eigen::Vector2f pos;
 		Eigen::Vector2f tex;
 	};
 
-	struct VertexList
-	{
+	struct VertexList {
 		GLuint* textureIdPtr; // this is a pointer because the texture ID can change during deinit/reinit (when launching a game)
 		std::vector<Vertex> verts;
 		std::vector<GLubyte> colors;
@@ -160,8 +160,7 @@ protected:
 	std::vector<VertexList> vertexLists;
 
 public:
-	struct CacheMetrics
-	{
+	struct CacheMetrics {
 		Eigen::Vector2f size;
 	} metrics;
 

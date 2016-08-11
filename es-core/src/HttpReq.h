@@ -8,7 +8,7 @@
  * HttpReq myRequest("www.google.com", "/index.html");
  * //for blocking behavior: while(myRequest.status() == HttpReq::REQ_IN_PROGRESS);
  * //for non-blocking behavior: check if(myRequest.status() != HttpReq::REQ_IN_PROGRESS) in some sort of update method
- * 
+ *
  * //once one of those completes, the request is ready
  * if(myRequest.status() != REQ_SUCCESS)
  * {
@@ -28,8 +28,7 @@ public:
 
 	~HttpReq();
 
-	enum Status
-	{
+	enum Status {
 		REQ_IN_PROGRESS,		//request is in progress
 		REQ_SUCCESS,			//request completed successfully, get it with getContent()
 

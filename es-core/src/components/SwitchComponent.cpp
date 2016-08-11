@@ -17,8 +17,7 @@ void SwitchComponent::onSizeChanged()
 
 bool SwitchComponent::input(InputConfig* config, Input input)
 {
-	if(config->isMappedTo("a", input) && input.value)
-	{
+	if(config->isMappedTo("a", input) && input.value) {
 		mState = !mState;
 		onStateChanged();
 		return true;
@@ -30,7 +29,7 @@ bool SwitchComponent::input(InputConfig* config, Input input)
 void SwitchComponent::render(const Eigen::Affine3f& parentTrans)
 {
 	Eigen::Affine3f trans = parentTrans * getTransform();
-	
+
 	mImage.render(trans);
 
 	renderChildren(trans);

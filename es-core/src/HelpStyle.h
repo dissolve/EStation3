@@ -7,8 +7,7 @@
 class ThemeData;
 class Font;
 
-struct HelpStyle
-{
+struct HelpStyle {
 	Eigen::Vector2f position;
 	unsigned int iconColor;
 	unsigned int textColor;

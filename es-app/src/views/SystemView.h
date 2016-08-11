@@ -10,8 +10,7 @@
 class SystemData;
 class AnimatedImageComponent;
 
-struct SystemViewData
-{
+struct SystemViewData {
 	std::shared_ptr<GuiComponent> logo;
 	std::shared_ptr<GuiComponent> logoSelected;
 	std::shared_ptr<ThemeExtras> backgroundExtras;
@@ -35,7 +34,10 @@ protected:
 	void onCursorChanged(const CursorState& state) override;
 
 private:
-	inline Eigen::Vector2f logoSize() const { return Eigen::Vector2f(mSize.x() * 0.25f, mSize.y() * 0.155f); }
+	inline Eigen::Vector2f logoSize() const
+	{
+		return Eigen::Vector2f(mSize.x() * 0.25f, mSize.y() * 0.155f);
+	}
 
 	void populate();
 

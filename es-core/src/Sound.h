@@ -11,10 +11,10 @@ class ThemeData;
 class Sound
 {
 	std::string mPath;
-    SDL_AudioSpec mSampleFormat;
+	SDL_AudioSpec mSampleFormat;
 	Uint8 * mSampleData;
-    Uint32 mSamplePos;
-    Uint32 mSampleLength;
+	Uint32 mSamplePos;
+	Uint32 mSampleLength;
 	bool playing;
 
 public:

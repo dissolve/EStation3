@@ -11,7 +11,7 @@ class TextEditComponent : public GuiComponent
 {
 public:
 	TextEditComponent(Window* window);
-	
+
 	void textInput(const char* text) override;
 	bool input(InputConfig* config, Input input) override;
 	void update(int deltaTime) override;
@@ -25,8 +25,14 @@ public:
 	void setValue(const std::string& val) override;
 	std::string getValue() const override;
 
-	inline bool isEditing() const { return mEditing; };
-	inline const std::shared_ptr<Font>& getFont() const { return mFont; }
+	inline bool isEditing() const
+	{
+		return mEditing;
+	};
+	inline const std::shared_ptr<Font>& getFont() const
+	{
+		return mFont;
+	}
 
 	void setCursor(size_t pos);
 

@@ -8,10 +8,10 @@
 
 #define HORIZONTAL_PADDING_PX 20
 
-GuiMsgBox::GuiMsgBox(Window* window, const std::string& text, 
-	const std::string& name1, const std::function<void()>& func1,
-	const std::string& name2, const std::function<void()>& func2, 
-	const std::string& name3, const std::function<void()>& func3) : GuiComponent(window), 
+GuiMsgBox::GuiMsgBox(Window* window, const std::string& text,
+					 const std::string& name1, const std::function<void()>& func1,
+					 const std::string& name2, const std::function<void()>& func2,
+					 const std::string& name3, const std::function<void()>& func3) : GuiComponent(window),
 	mBackground(window, ":/frame.png"), mGrid(window, Eigen::Vector2i(1, 2))
 {
 	float width = Renderer::getScreenWidth() * 0.6f; // max width
@@ -22,20 +22,19 @@ GuiMsgBox::GuiMsgBox(Window* window, const std::string& text,
 
 	// create the buttons
 	mButtons.push_back(std::make_shared<ButtonComponent>(mWindow, name1, name1, std::bind(&GuiMsgBox::deleteMeAndCall, this, func1)));
-	if(!name2.empty())
+	if(!name2.empty()) {
 		mButtons.push_back(std::make_shared<ButtonComponent>(mWindow, name2, name3, std::bind(&GuiMsgBox::deleteMeAndCall, this, func2)));
-	if(!name3.empty())
+	}
+	if(!name3.empty()) {
 		mButtons.push_back(std::make_shared<ButtonComponent>(mWindow, name3, name3, std::bind(&GuiMsgBox::deleteMeAndCall, this, func3)));
+	}
 
 	// set accelerator automatically (button to press when "b" is pressed)
-	if(mButtons.size() == 1)
-	{
+	if(mButtons.size() == 1) {
 		mAcceleratorFunc = mButtons.front()->getPressedFunc();
-	}else{
-		for(auto it = mButtons.begin(); it != mButtons.end(); it++)
-		{
-			if(strToUpper((*it)->getText()) == "OK" || strToUpper((*it)->getText()) == "NO")
-			{
+	} else {
+		for(auto it = mButtons.begin(); it != mButtons.end(); it++) {
+			if(strToUpper((*it)->getText()) == "OK" || strToUpper((*it)->getText()) == "NO") {
 				mAcceleratorFunc = (*it)->getPressedFunc();
 				break;
 			}
@@ -47,8 +46,7 @@ GuiMsgBox::GuiMsgBox(Window* window, const std::string& text,
 	mGrid.setEntry(mButtonGrid, Eigen::Vector2i(0, 1), true, false, Eigen::Vector2i(1, 1), GridFlags::BORDER_TOP);
 
 	// decide final width
-	if(mMsg->getSize().x() < width && mButtonGrid->getSize().x() < width)
-	{
+	if(mMsg->getSize().x() < width && mButtonGrid->getSize().x() < width) {
 		// mMsg and buttons are narrower than width
 		width = std::max(mButtonGrid->getSize().x(), mMsg->getSize().x());
 		width = std::max(width, minWidth);
@@ -69,15 +67,13 @@ GuiMsgBox::GuiMsgBox(Window* window, const std::string& text,
 bool GuiMsgBox::input(InputConfig* config, Input input)
 {
 	// special case for when GuiMsgBox comes up to report errors before anything has been configured
-	if(config->getDeviceId() == DEVICE_KEYBOARD && !config->isConfigured() && input.value && 
-		(input.id == SDLK_RETURN || input.id == SDLK_ESCAPE || input.id == SDLK_SPACE))
-	{
+	if(config->getDeviceId() == DEVICE_KEYBOARD && !config->isConfigured() && input.value &&
+			(input.id == SDLK_RETURN || input.id == SDLK_ESCAPE || input.id == SDLK_SPACE)) {
 		mAcceleratorFunc();
 		return true;
 	}
 
-	if(mAcceleratorFunc && config->isMappedTo("b", input) && input.value != 0)
-	{
+	if(mAcceleratorFunc && config->isMappedTo("b", input) && input.value != 0) {
 		mAcceleratorFunc();
 		return true;
 	}
@@ -89,7 +85,7 @@ void GuiMsgBox::onSizeChanged()
 {
 	mGrid.setSize(mSize);
 	mGrid.setRowHeightPerc(1, mButtonGrid->getSize().y() / mSize.y());
-	
+
 	// update messagebox size
 	mMsg->setSize(mSize.x() - HORIZONTAL_PADDING_PX*2, mGrid.getRowHeight(0));
 	mGrid.onSizeChanged();
@@ -102,8 +98,9 @@ void GuiMsgBox::deleteMeAndCall(const std::function<void()>& func)
 	auto funcCopy = func;
 	delete this;
 
-	if(funcCopy)
+	if(funcCopy) {
 		funcCopy();
+	}
 
 }
 

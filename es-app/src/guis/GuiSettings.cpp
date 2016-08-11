@@ -20,32 +20,33 @@ GuiSettings::~GuiSettings()
 
 void GuiSettings::save()
 {
-	if(!mSaveFuncs.size())
+	if(!mSaveFuncs.size()) {
 		return;
+	}
 
-	for(auto it = mSaveFuncs.begin(); it != mSaveFuncs.end(); it++)
+	for(auto it = mSaveFuncs.begin(); it != mSaveFuncs.end(); it++) {
 		(*it)();
+	}
 
 	Settings::getInstance()->saveFile();
 }
 
 bool GuiSettings::input(InputConfig* config, Input input)
 {
-	if(config->isMappedTo("b", input) && input.value != 0)
-	{
+	if(config->isMappedTo("b", input) && input.value != 0) {
 		delete this;
 		return true;
 	}
 
-	if(config->isMappedTo("start", input) && input.value != 0)
-	{
+	if(config->isMappedTo("start", input) && input.value != 0) {
 		// close everything
 		Window* window = mWindow;
-		while(window->peekGui() && window->peekGui() != ViewController::get())
+		while(window->peekGui() && window->peekGui() != ViewController::get()) {
 			delete window->peekGui();
+		}
 		return true;
 	}
-	
+
 	return GuiComponent::input(config, input);
 }
 

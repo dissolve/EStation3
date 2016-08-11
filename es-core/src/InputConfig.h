@@ -10,8 +10,7 @@
 
 #define DEVICE_KEYBOARD -1
 
-enum InputType
-{
+enum InputType {
 	TYPE_AXIS,
 	TYPE_BUTTON,
 	TYPE_HAT,
@@ -19,8 +18,7 @@ enum InputType
 	TYPE_COUNT
 };
 
-struct Input
-{
+struct Input {
 public:
 	int device;
 	InputType type;
@@ -43,37 +41,37 @@ public:
 
 	std::string getHatDir(int val)
 	{
-		if(val & SDL_HAT_UP)
+		if(val & SDL_HAT_UP) {
 			return "up";
-		else if(val & SDL_HAT_DOWN)
+		} else if(val & SDL_HAT_DOWN) {
 			return "down";
-		else if(val & SDL_HAT_LEFT)
+		} else if(val & SDL_HAT_LEFT) {
 			return "left";
-		else if(val & SDL_HAT_RIGHT)
+		} else if(val & SDL_HAT_RIGHT) {
 			return "right";
+		}
 		return "neutral?";
 	}
 
 	std::string string()
 	{
 		std::stringstream stream;
-		switch(type)
-		{
-			case TYPE_BUTTON:
-				stream << "Button " << id;
-				break;
-			case TYPE_AXIS:
-				stream << "Axis " << id << (value > 0 ? "+" : "-");
-				break;
-			case TYPE_HAT:
-				stream << "Hat " << id << " " << getHatDir(value);
-				break;
-			case TYPE_KEY:
-				stream << "Key " << SDL_GetKeyName((SDL_Keycode)id);
-				break;
-			default:
-				stream << "Input to string error";
-				break;
+		switch(type) {
+		case TYPE_BUTTON:
+			stream << "Button " << id;
+			break;
+		case TYPE_AXIS:
+			stream << "Axis " << id << (value > 0 ? "+" : "-");
+			break;
+		case TYPE_HAT:
+			stream << "Hat " << id << " " << getHatDir(value);
+			break;
+		case TYPE_KEY:
+			stream << "Key " << SDL_GetKeyName((SDL_Keycode)id);
+			break;
+		default:
+			stream << "Input to string error";
+			break;
 		}
 
 		return stream.str();
@@ -89,9 +87,18 @@ public:
 	void mapInput(const std::string& name, Input input);
 	void unmapInput(const std::string& name); // unmap all Inputs mapped to this name
 
-	inline int getDeviceId() const { return mDeviceId; };
-	inline const std::string& getDeviceName() { return mDeviceName; }
-	inline const std::string& getDeviceGUIDString() { return mDeviceGUID; }
+	inline int getDeviceId() const
+	{
+		return mDeviceId;
+	};
+	inline const std::string& getDeviceName()
+	{
+		return mDeviceName;
+	}
+	inline const std::string& getDeviceGUIDString()
+	{
+		return mDeviceGUID;
+	}
 
 	//Returns true if Input is mapped to this name, false otherwise.
 	bool isMappedTo(const std::string& name, Input input);

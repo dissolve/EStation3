@@ -10,10 +10,10 @@ class ButtonComponent;
 class GuiMsgBox : public GuiComponent
 {
 public:
-	GuiMsgBox(Window* window, const std::string& text, 
-		const std::string& name1 = "OK", const std::function<void()>& func1 = nullptr,
-		const std::string& name2 = "", const std::function<void()>& func2 = nullptr, 
-		const std::string& name3 = "", const std::function<void()>& func3 = nullptr);
+	GuiMsgBox(Window* window, const std::string& text,
+			  const std::string& name1 = "OK", const std::function<void()>& func1 = nullptr,
+			  const std::string& name2 = "", const std::function<void()>& func2 = nullptr,
+			  const std::string& name3 = "", const std::function<void()>& func3 = nullptr);
 
 	bool input(InputConfig* config, Input input) override;
 	void onSizeChanged() override;

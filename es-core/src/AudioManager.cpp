@@ -17,11 +17,9 @@ void AudioManager::mixAudio(void *unused, Uint8 *stream, int len)
 
 	//iterate through all our samples
 	std::vector<std::shared_ptr<Sound>>::const_iterator soundIt = sSoundVector.cbegin();
-	while (soundIt != sSoundVector.cend())
-	{
+	while (soundIt != sSoundVector.cend()) {
 		std::shared_ptr<Sound> sound = *soundIt;
-		if(sound->isPlaying())
-		{
+		if(sound->isPlaying()) {
 			//calculate rest length of current sample
 			Uint32 restLength = (sound->getLength() - sound->getPosition());
 			if (restLength > (Uint32)len) {
@@ -30,8 +28,7 @@ void AudioManager::mixAudio(void *unused, Uint8 *stream, int len)
 			}
 			//mix sample into stream
 			SDL_MixAudio(stream, &(sound->getData()[sound->getPosition()]), restLength, SDL_MIX_MAXVOLUME);
-			if (sound->getPosition() + restLength < sound->getLength())
-			{
+			if (sound->getPosition() + restLength < sound->getLength()) {
 				//sample hasn't ended yet
 				stillPlaying = true;
 			}
@@ -70,17 +67,14 @@ std::shared_ptr<AudioManager> & AudioManager::getInstance()
 
 void AudioManager::init()
 {
-	if (SDL_InitSubSystem(SDL_INIT_AUDIO) != 0)
-	{
+	if (SDL_InitSubSystem(SDL_INIT_AUDIO) != 0) {
 		LOG(LogError) << "Error initializing SDL audio!\n" << SDL_GetError();
 		return;
 	}
 
 	//stop playing all Sounds
-	for(unsigned int i = 0; i < sSoundVector.size(); i++)
-	{
-		if(sSoundVector.at(i)->isPlaying())
-		{
+	for(unsigned int i = 0; i < sSoundVector.size(); i++) {
+		if(sSoundVector.at(i)->isPlaying()) {
 			sSoundVector[i]->stop();
 		}
 	}
@@ -117,10 +111,8 @@ void AudioManager::registerSound(std::shared_ptr<Sound> & sound)
 void AudioManager::unregisterSound(std::shared_ptr<Sound> & sound)
 {
 	getInstance();
-	for(unsigned int i = 0; i < sSoundVector.size(); i++)
-	{
-		if(sSoundVector.at(i) == sound)
-		{
+	for(unsigned int i = 0; i < sSoundVector.size(); i++) {
+		if(sSoundVector.at(i) == sound) {
 			sSoundVector[i]->stop();
 			sSoundVector.erase(sSoundVector.begin() + i);
 			return;
@@ -140,10 +132,8 @@ void AudioManager::play()
 void AudioManager::stop()
 {
 	//stop playing all Sounds
-	for(unsigned int i = 0; i < sSoundVector.size(); i++)
-	{
-		if(sSoundVector.at(i)->isPlaying())
-		{
+	for(unsigned int i = 0; i < sSoundVector.size(); i++) {
+		if(sSoundVector.at(i)->isPlaying()) {
 			sSoundVector[i]->stop();
 		}
 	}

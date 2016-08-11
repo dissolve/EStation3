@@ -3,15 +3,15 @@
 #include "Window.h"
 #include "animations/LambdaAnimation.h"
 
-DetailedGameListView::DetailedGameListView(Window* window, FileData* root) : 
-	BasicGameListView(window, root), 
-	mDescContainer(window), mDescription(window), 
+DetailedGameListView::DetailedGameListView(Window* window, FileData* root) :
+	BasicGameListView(window, root),
+	mDescContainer(window), mDescription(window),
 	mImage(window),
 
-	mLblRating(window), mLblReleaseDate(window), mLblDeveloper(window), mLblPublisher(window), 
+	mLblRating(window), mLblReleaseDate(window), mLblDeveloper(window), mLblPublisher(window),
 	mLblGenre(window), mLblPlayers(window), mLblLastPlayed(window), mLblPlayCount(window),
 
-	mRating(window), mReleaseDate(window), mDeveloper(window), mPublisher(window), 
+	mRating(window), mReleaseDate(window), mDeveloper(window), mPublisher(window),
 	mGenre(window), mPlayers(window), mLastPlayed(window), mPlayCount(window)
 {
 	//mHeaderImage.setPosition(mSize.x() * 0.25f, 0);
@@ -21,7 +21,9 @@ DetailedGameListView::DetailedGameListView(Window* window, FileData* root) :
 	mList.setPosition(mSize.x() * (0.50f + padding), mList.getPosition().y());
 	mList.setSize(mSize.x() * (0.50f - padding), mList.getSize().y());
 	mList.setAlignment(TextListComponent<FileData*>::ALIGN_LEFT);
-	mList.setCursorChangedCallback([&](const CursorState& state) { updateInfoPanel(); });
+	mList.setCursorChangedCallback([&](const CursorState& state) {
+		updateInfoPanel();
+	});
 
 	// image
 	mImage.setOrigin(0.5f, 0.5f);
@@ -82,12 +84,11 @@ void DetailedGameListView::onThemeChanged(const std::shared_ptr<ThemeData>& them
 	std::vector<TextComponent*> labels = getMDLabels();
 	assert(labels.size() == 8);
 	const char* lblElements[8] = {
-		"md_lbl_rating", "md_lbl_releasedate", "md_lbl_developer", "md_lbl_publisher", 
+		"md_lbl_rating", "md_lbl_releasedate", "md_lbl_developer", "md_lbl_publisher",
 		"md_lbl_genre", "md_lbl_players", "md_lbl_lastplayed", "md_lbl_playcount"
 	};
 
-	for(unsigned int i = 0; i < labels.size(); i++)
-	{
+	for(unsigned int i = 0; i < labels.size(); i++) {
 		labels[i]->applyTheme(theme, getName(), lblElements[i], ALL);
 	}
 
@@ -96,12 +97,11 @@ void DetailedGameListView::onThemeChanged(const std::shared_ptr<ThemeData>& them
 	std::vector<GuiComponent*> values = getMDValues();
 	assert(values.size() == 8);
 	const char* valElements[8] = {
-		"md_rating", "md_releasedate", "md_developer", "md_publisher", 
+		"md_rating", "md_releasedate", "md_developer", "md_publisher",
 		"md_genre", "md_players", "md_lastplayed", "md_playcount"
 	};
 
-	for(unsigned int i = 0; i < values.size(); i++)
-	{
+	for(unsigned int i = 0; i < values.size(); i++) {
 		values[i]->applyTheme(theme, getName(), valElements[i], ALL ^ ThemeFlags::TEXT);
 	}
 
@@ -120,18 +120,16 @@ void DetailedGameListView::initMDLabels()
 	const unsigned int rowCount = components.size() / 2;
 
 	Vector3f start(mSize.x() * 0.01f, mSize.y() * 0.625f, 0.0f);
-	
+
 	const float colSize = (mSize.x() * 0.48f) / colCount;
 	const float rowPadding = 0.01f * mSize.y();
 
-	for(unsigned int i = 0; i < components.size(); i++)
-	{
+	for(unsigned int i = 0; i < components.size(); i++) {
 		const unsigned int row = i % rowCount;
 		Vector3f pos(0.0f, 0.0f, 0.0f);
-		if(row == 0)
-		{
+		if(row == 0) {
 			pos = start + Vector3f(colSize * (i / rowCount), 0, 0);
-		}else{
+		} else {
 			// work from the last component
 			GuiComponent* lc = components[i-1];
 			pos = lc->getPosition() + Vector3f(0, lc->getSize().y() + rowPadding, 0);
@@ -162,15 +160,15 @@ void DetailedGameListView::initMDValues()
 	float bottom = 0.0f;
 
 	const float colSize = (mSize.x() * 0.48f) / 2;
-	for(unsigned int i = 0; i < labels.size(); i++)
-	{
+	for(unsigned int i = 0; i < labels.size(); i++) {
 		const float heightDiff = (labels[i]->getSize().y() - values[i]->getSize().y()) / 2;
 		values[i]->setPosition(labels[i]->getPosition() + Vector3f(labels[i]->getSize().x(), heightDiff, 0));
 		values[i]->setSize(colSize - labels[i]->getSize().x(), values[i]->getSize().y());
 
 		float testBot = values[i]->getPosition().y() + values[i]->getSize().y();
-		if(testBot > bottom)
+		if(testBot > bottom) {
 			bottom = testBot;
+		}
 	}
 
 	mDescContainer.setPosition(mDescContainer.getPosition().x(), bottom + mSize.y() * 0.01f);
@@ -182,18 +180,16 @@ void DetailedGameListView::updateInfoPanel()
 	FileData* file = (mList.size() == 0 || mList.isScrolling()) ? NULL : mList.getSelected();
 
 	bool fadingOut;
-	if(file == NULL)
-	{
+	if(file == NULL) {
 		//mImage.setImage("");
 		//mDescription.setText("");
 		fadingOut = true;
-	}else{
+	} else {
 		mImage.setImage(file->metadata.get("image"));
 		mDescription.setText(file->metadata.get("desc"));
 		mDescContainer.reset();
 
-		if(file->getType() == GAME)
-		{
+		if(file->getType() == GAME) {
 			mRating.setValue(file->metadata.get("rating"));
 			mReleaseDate.setValue(file->metadata.get("releasedate"));
 			mDeveloper.setValue(file->metadata.get("developer"));
@@ -203,7 +199,7 @@ void DetailedGameListView::updateInfoPanel()
 			mLastPlayed.setValue(file->metadata.get("lastplayed"));
 			mPlayCount.setValue(file->metadata.get("playcount"));
 		}
-		
+
 		fadingOut = false;
 	}
 
@@ -213,18 +209,15 @@ void DetailedGameListView::updateInfoPanel()
 	std::vector<TextComponent*> labels = getMDLabels();
 	comps.insert(comps.end(), labels.begin(), labels.end());
 
-	for(auto it = comps.begin(); it != comps.end(); it++)
-	{
+	for(auto it = comps.begin(); it != comps.end(); it++) {
 		GuiComponent* comp = *it;
 		// an animation is playing
 		//   then animate if reverse != fadingOut
 		// an animation is not playing
 		//   then animate if opacity != our target opacity
-		if((comp->isAnimationPlaying(0) && comp->isAnimationReversed(0) != fadingOut) || 
-			(!comp->isAnimationPlaying(0) && comp->getOpacity() != (fadingOut ? 0 : 255)))
-		{
-			auto func = [comp](float t)
-			{
+		if((comp->isAnimationPlaying(0) && comp->isAnimationReversed(0) != fadingOut) ||
+				(!comp->isAnimationPlaying(0) && comp->getOpacity() != (fadingOut ? 0 : 255))) {
+			auto func = [comp](float t) {
 				comp->setOpacity((unsigned char)(lerp<float>(0.0f, 1.0f, t)*255));
 			};
 			comp->setAnimation(new LambdaAnimation(func, 150), 0, nullptr, fadingOut);
@@ -235,8 +228,9 @@ void DetailedGameListView::updateInfoPanel()
 void DetailedGameListView::launch(FileData* game)
 {
 	Eigen::Vector3f target(Renderer::getScreenWidth() / 2.0f, Renderer::getScreenHeight() / 2.0f, 0);
-	if(mImage.hasImage())
+	if(mImage.hasImage()) {
 		target << mImage.getCenter().x(), mImage.getCenter().y(), 0;
+	}
 
 	ViewController::get()->launch(game, target);
 }

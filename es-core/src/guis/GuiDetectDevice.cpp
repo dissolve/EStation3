@@ -17,7 +17,7 @@ using namespace Eigen;
 
 namespace fs = boost::filesystem;
 
-GuiDetectDevice::GuiDetectDevice(Window* window, bool firstRun, const std::function<void()>& doneCallback) : GuiComponent(window), mFirstRun(firstRun), 
+GuiDetectDevice::GuiDetectDevice(Window* window, bool firstRun, const std::function<void()>& doneCallback) : GuiComponent(window), mFirstRun(firstRun),
 	mBackground(window, ":/frame.png"), mGrid(window, Vector2i(1, 5))
 {
 	mHoldingConfig = NULL;
@@ -26,20 +26,21 @@ GuiDetectDevice::GuiDetectDevice(Window* window, bool firstRun, const std::funct
 
 	addChild(&mBackground);
 	addChild(&mGrid);
-	
+
 	// title
-	mTitle = std::make_shared<TextComponent>(mWindow, firstRun ? "WELCOME" : "CONFIGURE INPUT", 
-		Font::get(FONT_SIZE_LARGE), 0x555555FF, ALIGN_CENTER);
+	mTitle = std::make_shared<TextComponent>(mWindow, firstRun ? "WELCOME" : "CONFIGURE INPUT",
+			 Font::get(FONT_SIZE_LARGE), 0x555555FF, ALIGN_CENTER);
 	mGrid.setEntry(mTitle, Vector2i(0, 0), false, true, Vector2i(1, 1), GridFlags::BORDER_BOTTOM);
 
 	// device info
 	std::stringstream deviceInfo;
 	int numDevices = InputManager::getInstance()->getNumJoysticks();
-	
-	if(numDevices > 0)
+
+	if(numDevices > 0) {
 		deviceInfo << numDevices << " GAMEPAD" << (numDevices > 1 ? "S" : "") << " DETECTED";
-	else
+	} else {
 		deviceInfo << "NO GAMEPADS DETECTED";
+	}
 	mDeviceInfo = std::make_shared<TextComponent>(mWindow, deviceInfo.str(), Font::get(FONT_SIZE_SMALL), 0x999999FF, ALIGN_CENTER);
 	mGrid.setEntry(mDeviceInfo, Vector2i(0, 1), false, true);
 
@@ -74,23 +75,19 @@ void GuiDetectDevice::onSizeChanged()
 
 bool GuiDetectDevice::input(InputConfig* config, Input input)
 {
-	if(!mFirstRun && input.device == DEVICE_KEYBOARD && input.type == TYPE_KEY && input.value && input.id == SDLK_ESCAPE)
-	{
+	if(!mFirstRun && input.device == DEVICE_KEYBOARD && input.type == TYPE_KEY && input.value && input.id == SDLK_ESCAPE) {
 		// cancel configuring
 		delete this;
 		return true;
 	}
 
-	if(input.type == TYPE_BUTTON || input.type == TYPE_KEY)
-	{
-		if(input.value && mHoldingConfig == NULL)
-		{
+	if(input.type == TYPE_BUTTON || input.type == TYPE_KEY) {
+		if(input.value && mHoldingConfig == NULL) {
 			// started holding
 			mHoldingConfig = config;
 			mHoldTime = HOLD_TIME;
 			mDeviceHeld->setText(strToUpper(config->getDeviceName()));
-		}else if(!input.value && mHoldingConfig == config)
-		{
+		} else if(!input.value && mHoldingConfig == config) {
 			// cancel
 			mHoldingConfig = NULL;
 			mDeviceHeld->setText("");
@@ -102,23 +99,19 @@ bool GuiDetectDevice::input(InputConfig* config, Input input)
 
 void GuiDetectDevice::update(int deltaTime)
 {
-	if(mHoldingConfig)
-	{
+	if(mHoldingConfig) {
 		// If ES starts and if a known device is connected after startup skip controller configuration
-		if(mFirstRun && fs::exists(InputManager::getConfigPath()) && InputManager::getInstance()->getNumConfiguredDevices() > 0)
-		{
-			if(mDoneCallback)
+		if(mFirstRun && fs::exists(InputManager::getConfigPath()) && InputManager::getInstance()->getNumConfiguredDevices() > 0) {
+			if(mDoneCallback) {
 				mDoneCallback();
+			}
 			delete this; // delete GUI element
-		}
-		else
-		{
+		} else {
 			mHoldTime -= deltaTime;
 			const float t = (float)mHoldTime / HOLD_TIME;
 			unsigned int c = (unsigned char)(t * 255);
 			mDeviceHeld->setColor((c << 24) | (c << 16) | (c << 8) | 0xFF);
-			if(mHoldTime <= 0)
-			{
+			if(mHoldTime <= 0) {
 				// picked one!
 				mWindow->pushGui(new GuiInputConfig(mWindow, mHoldingConfig, true, mDoneCallback));
 				delete this;

@@ -6,21 +6,24 @@
 #include "Util.h"
 
 NinePatchComponent::NinePatchComponent(Window* window, const std::string& path, unsigned int edgeColor, unsigned int centerColor) : GuiComponent(window),
-	mEdgeColor(edgeColor), mCenterColor(centerColor), 
+	mEdgeColor(edgeColor), mCenterColor(centerColor),
 	mPath(path),
 	mVertices(NULL), mColors(NULL)
 {
-	if(!mPath.empty())
+	if(!mPath.empty()) {
 		buildVertices();
+	}
 }
 
 NinePatchComponent::~NinePatchComponent()
 {
-	if (mVertices != NULL)
+	if (mVertices != NULL) {
 		delete[] mVertices;
+	}
 
-	if (mColors != NULL)
+	if (mColors != NULL) {
 		delete[] mColors;
+	}
 }
 
 void NinePatchComponent::updateColors()
@@ -31,16 +34,17 @@ void NinePatchComponent::updateColors()
 
 void NinePatchComponent::buildVertices()
 {
-	if(mVertices != NULL)
+	if(mVertices != NULL) {
 		delete[] mVertices;
+	}
 
-	if(mColors != NULL)
+	if(mColors != NULL) {
 		delete[] mColors;
+	}
 
 	mTexture = TextureResource::get(mPath);
 
-	if(mTexture->getSize() == Eigen::Vector2i::Zero())
-	{
+	if(mTexture->getSize() == Eigen::Vector2i::Zero()) {
 		mVertices = NULL;
 		mColors = NULL;
 		LOG(LogWarning) << "NinePatchComponent missing texture!";
@@ -90,25 +94,28 @@ void NinePatchComponent::buildVertices()
 	mVertices[8 * 6].pos = mVertices[7 * 6].pos + Eigen::Vector2f(borderWidth, 0); //bot right
 
 	int v = 0;
-	for(int slice = 0; slice < 9; slice++)
-	{
+	for(int slice = 0; slice < 9; slice++) {
 		Eigen::Vector2f size;
 
 		//corners
-		if(slice == 0 || slice == 2 || slice == 6 || slice == 8)
+		if(slice == 0 || slice == 2 || slice == 6 || slice == 8) {
 			size = pieceSizes;
+		}
 
 		//vertical borders
-		if(slice == 1 || slice == 7)
+		if(slice == 1 || slice == 7) {
 			size << borderWidth, pieceSizes.y();
+		}
 
 		//horizontal borders
-		if(slice == 3 || slice == 5)
+		if(slice == 3 || slice == 5) {
 			size << pieceSizes.x(), borderHeight;
+		}
 
 		//center
-		if(slice == 4)
+		if(slice == 4) {
 			size << borderWidth, borderHeight;
+		}
 
 		//no resizing will be necessary
 		//mVertices[v + 0] is already correct
@@ -133,8 +140,7 @@ void NinePatchComponent::buildVertices()
 	}
 
 	// round vertices
-	for(int i = 0; i < 6*9; i++)
-	{
+	for(int i = 0; i < 6*9; i++) {
 		mVertices[i].pos = roundVector(mVertices[i].pos);
 	}
 }
@@ -142,9 +148,8 @@ void NinePatchComponent::buildVertices()
 void NinePatchComponent::render(const Eigen::Affine3f& parentTrans)
 {
 	Eigen::Affine3f trans = roundMatrix(parentTrans * getTransform());
-	
-	if(mTexture && mVertices != NULL)
-	{
+
+	if(mTexture && mVertices != NULL) {
 		Renderer::setMatrix(trans);
 
 		mTexture->bind();
@@ -219,9 +224,11 @@ void NinePatchComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, con
 	using namespace ThemeFlags;
 
 	const ThemeData::ThemeElement* elem = theme->getElement(view, element, "ninepatch");
-	if(!elem)
+	if(!elem) {
 		return;
+	}
 
-	if(properties & PATH && elem->has("path"))
+	if(properties & PATH && elem->has("path")) {
 		setImagePath(elem->get<std::string>("path"));
+	}
 }

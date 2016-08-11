@@ -7,7 +7,10 @@ class MoveCameraAnimation : public Animation
 public:
 	MoveCameraAnimation(Eigen::Affine3f& camera, const Eigen::Vector3f& target) : mCameraStart(camera), mTarget(target), cameraOut(camera) {}
 
-	int getDuration() const override { return 400; }
+	int getDuration() const override
+	{
+		return 400;
+	}
 
 	void apply(float t) override
 	{

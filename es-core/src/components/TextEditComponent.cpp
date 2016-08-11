@@ -12,12 +12,12 @@
 #define CURSOR_REPEAT_SPEED 28 // lower is faster
 
 TextEditComponent::TextEditComponent(Window* window) : GuiComponent(window),
-	mBox(window, ":/textinput_ninepatch.png"), mFocused(false), 
-	mScrollOffset(0.0f, 0.0f), mCursor(0), mEditing(false), mFont(Font::get(FONT_SIZE_MEDIUM, FONT_PATH_LIGHT)), 
+	mBox(window, ":/textinput_ninepatch.png"), mFocused(false),
+	mScrollOffset(0.0f, 0.0f), mCursor(0), mEditing(false), mFont(Font::get(FONT_SIZE_MEDIUM, FONT_PATH_LIGHT)),
 	mCursorRepeatDir(0)
 {
 	addChild(&mBox);
-	
+
 	onFocusLost();
 
 	setSize(256, mFont->getHeight() + TEXT_PADDING_VERT);
@@ -54,18 +54,15 @@ std::string TextEditComponent::getValue() const
 
 void TextEditComponent::textInput(const char* text)
 {
-	if(mEditing)
-	{
+	if(mEditing) {
 		mCursorRepeatDir = 0;
-		if(text[0] == '\b')
-		{
-			if(mCursor > 0)
-			{
+		if(text[0] == '\b') {
+			if(mCursor > 0) {
 				size_t newCursor = Font::getPrevCursor(mText, mCursor);
 				mText.erase(mText.begin() + newCursor, mText.begin() + mCursor);
 				mCursor = newCursor;
 			}
-		}else{
+		} else {
 			mText.insert(mCursor, text);
 			mCursor += strlen(text);
 		}
@@ -91,48 +88,40 @@ void TextEditComponent::stopEditing()
 
 bool TextEditComponent::input(InputConfig* config, Input input)
 {
-	if(input.value == 0)
-	{
-		if(config->isMappedTo("left", input) || config->isMappedTo("right", input))
+	if(input.value == 0) {
+		if(config->isMappedTo("left", input) || config->isMappedTo("right", input)) {
 			mCursorRepeatDir = 0;
+		}
 
 		return false;
 	}
 
-	if(config->isMappedTo("a", input) && mFocused && !mEditing)
-	{
+	if(config->isMappedTo("a", input) && mFocused && !mEditing) {
 		startEditing();
 		return true;
 	}
 
-	if(mEditing)
-	{
-		if(config->getDeviceId() == DEVICE_KEYBOARD && input.id == SDLK_RETURN)
-		{
-			if(isMultiline())
-			{
+	if(mEditing) {
+		if(config->getDeviceId() == DEVICE_KEYBOARD && input.id == SDLK_RETURN) {
+			if(isMultiline()) {
 				textInput("\n");
-			}else{
+			} else {
 				stopEditing();
 			}
 
 			return true;
 		}
 
-		if((config->getDeviceId() == DEVICE_KEYBOARD && input.id == SDLK_ESCAPE) || (config->getDeviceId() != DEVICE_KEYBOARD && config->isMappedTo("b", input)))
-		{
+		if((config->getDeviceId() == DEVICE_KEYBOARD && input.id == SDLK_ESCAPE) || (config->getDeviceId() != DEVICE_KEYBOARD && config->isMappedTo("b", input))) {
 			stopEditing();
 			return true;
 		}
 
-		if(config->isMappedTo("up", input))
-		{
+		if(config->isMappedTo("up", input)) {
 			// TODO
-		}else if(config->isMappedTo("down", input))
-		{
+		} else if(config->isMappedTo("down", input)) {
 			// TODO
-		}else if(config->isMappedTo("left", input) || config->isMappedTo("right", input))
-		{
+		} else if(config->isMappedTo("left", input) || config->isMappedTo("right", input)) {
 			mCursorRepeatDir = config->isMappedTo("left", input) ? -1 : 1;
 			mCursorRepeatTimer = -(CURSOR_REPEAT_START_DELAY - CURSOR_REPEAT_SPEED);
 			moveCursor(mCursorRepeatDir);
@@ -153,12 +142,12 @@ void TextEditComponent::update(int deltaTime)
 
 void TextEditComponent::updateCursorRepeat(int deltaTime)
 {
-	if(mCursorRepeatDir == 0)
+	if(mCursorRepeatDir == 0) {
 		return;
+	}
 
 	mCursorRepeatTimer += deltaTime;
-	while(mCursorRepeatTimer >= CURSOR_REPEAT_SPEED)
-	{
+	while(mCursorRepeatTimer >= CURSOR_REPEAT_SPEED) {
 		moveCursor(mCursorRepeatDir);
 		mCursorRepeatTimer -= CURSOR_REPEAT_SPEED;
 	}
@@ -172,10 +161,11 @@ void TextEditComponent::moveCursor(int amt)
 
 void TextEditComponent::setCursor(size_t pos)
 {
-	if(pos == std::string::npos)
+	if(pos == std::string::npos) {
 		mCursor = mText.length();
-	else
+	} else {
 		mCursor = (int)pos;
+	}
 
 	moveCursor(0);
 }
@@ -185,31 +175,27 @@ void TextEditComponent::onTextChanged()
 	std::string wrappedText = (isMultiline() ? mFont->wrapText(mText, getTextAreaSize().x()) : mText);
 	mTextCache = std::unique_ptr<TextCache>(mFont->buildTextCache(wrappedText, 0, 0, 0x77777700 | getOpacity()));
 
-	if(mCursor > (int)mText.length())
+	if(mCursor > (int)mText.length()) {
 		mCursor = mText.length();
+	}
 }
 
 void TextEditComponent::onCursorChanged()
 {
-	if(isMultiline())
-	{
-		Eigen::Vector2f textSize = mFont->getWrappedTextCursorOffset(mText, getTextAreaSize().x(), mCursor); 
+	if(isMultiline()) {
+		Eigen::Vector2f textSize = mFont->getWrappedTextCursorOffset(mText, getTextAreaSize().x(), mCursor);
 
-		if(mScrollOffset.y() + getTextAreaSize().y() < textSize.y() + mFont->getHeight()) //need to scroll down?
-		{
+		if(mScrollOffset.y() + getTextAreaSize().y() < textSize.y() + mFont->getHeight()) { //need to scroll down?
 			mScrollOffset[1] = textSize.y() - getTextAreaSize().y() + mFont->getHeight();
-		}else if(mScrollOffset.y() > textSize.y()) //need to scroll up?
-		{
+		} else if(mScrollOffset.y() > textSize.y()) { //need to scroll up?
 			mScrollOffset[1] = textSize.y();
 		}
-	}else{
+	} else {
 		Eigen::Vector2f cursorPos = mFont->sizeText(mText.substr(0, mCursor));
 
-		if(mScrollOffset.x() + getTextAreaSize().x() < cursorPos.x())
-		{
+		if(mScrollOffset.x() + getTextAreaSize().x() < cursorPos.x()) {
 			mScrollOffset[0] = cursorPos.x() - getTextAreaSize().x();
-		}else if(mScrollOffset.x() > cursorPos.x())
-		{
+		} else if(mScrollOffset.x() > cursorPos.x()) {
 			mScrollOffset[0] = cursorPos.x();
 		}
 	}
@@ -234,8 +220,7 @@ void TextEditComponent::render(const Eigen::Affine3f& parentTrans)
 
 	Renderer::setMatrix(trans);
 
-	if(mTextCache)
-	{
+	if(mTextCache) {
 		mFont->renderTextCache(mTextCache.get());
 	}
 
@@ -243,13 +228,11 @@ void TextEditComponent::render(const Eigen::Affine3f& parentTrans)
 	Renderer::popClipRect();
 
 	// draw cursor
-	if(mEditing)
-	{
+	if(mEditing) {
 		Eigen::Vector2f cursorPos;
-		if(isMultiline())
-		{
+		if(isMultiline()) {
 			cursorPos = mFont->getWrappedTextCursorOffset(mText, getTextAreaSize().x(), mCursor);
-		}else{
+		} else {
 			cursorPos = mFont->sizeText(mText.substr(0, mCursor));
 			cursorPos[1] = 0;
 		}
@@ -277,11 +260,10 @@ Eigen::Vector2f TextEditComponent::getTextAreaSize() const
 std::vector<HelpPrompt> TextEditComponent::getHelpPrompts()
 {
 	std::vector<HelpPrompt> prompts;
-	if(mEditing)
-	{
+	if(mEditing) {
 		prompts.push_back(HelpPrompt("up/down/left/right", "move cursor"));
 		prompts.push_back(HelpPrompt("b", "stop editing"));
-	}else{
+	} else {
 		prompts.push_back(HelpPrompt("a", "edit"));
 	}
 	return prompts;

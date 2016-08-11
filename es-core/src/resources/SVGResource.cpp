@@ -38,35 +38,33 @@ void SVGResource::initFromMemory(const char* file, size_t length)
 	mSVGImage = nsvgParse(copy, "px", DPI);
 	free(copy);
 
-	if(!mSVGImage)
-	{
+	if(!mSVGImage) {
 		LOG(LogError) << "Error parsing SVG image.";
 		return;
 	}
 
-	if(mLastWidth && mLastHeight)
+	if(mLastWidth && mLastHeight) {
 		rasterizeAt(mLastWidth, mLastHeight);
-	else
+	} else {
 		rasterizeAt((size_t)round(mSVGImage->width), (size_t)round(mSVGImage->height));
+	}
 }
 
 void SVGResource::rasterizeAt(size_t width, size_t height)
 {
-	if(!mSVGImage || (width == 0 && height == 0))
+	if(!mSVGImage || (width == 0 && height == 0)) {
 		return;
+	}
 
-	if(width == 0)
-	{
+	if(width == 0) {
 		// auto scale width to keep aspect
 		width = (size_t)round((height / mSVGImage->height) * mSVGImage->width);
-	}else if(height == 0)
-	{
+	} else if(height == 0) {
 		// auto scale height to keep aspect
 		height = (size_t)round((width / mSVGImage->width) * mSVGImage->height);
 	}
 
-	if(width != (size_t)round(mSVGImage->width) && height != (size_t)round(mSVGImage->height))
-	{
+	if(width != (size_t)round(mSVGImage->width) && height != (size_t)round(mSVGImage->height)) {
 		mLastWidth = width;
 		mLastHeight = height;
 	}
@@ -86,16 +84,18 @@ void SVGResource::rasterizeAt(size_t width, size_t height)
 
 Eigen::Vector2f SVGResource::getSourceImageSize() const
 {
-	if(mSVGImage)
+	if(mSVGImage) {
 		return Eigen::Vector2f(mSVGImage->width, mSVGImage->height);
+	}
 
 	return Eigen::Vector2f::Zero();
 }
 
 void SVGResource::deinitSVG()
 {
-	if(mSVGImage)
+	if(mSVGImage) {
 		nsvgDelete(mSVGImage);
+	}
 
 	mSVGImage = NULL;
 }

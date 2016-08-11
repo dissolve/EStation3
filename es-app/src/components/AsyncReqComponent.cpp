@@ -1,19 +1,19 @@
 #include "components/AsyncReqComponent.h"
 #include "Renderer.h"
 
-AsyncReqComponent::AsyncReqComponent(Window* window, std::shared_ptr<HttpReq> req, std::function<void(std::shared_ptr<HttpReq>)> onSuccess, std::function<void()> onCancel) 
-	: GuiComponent(window), 
-	mSuccessFunc(onSuccess), mCancelFunc(onCancel), mTime(0), mRequest(req)
+AsyncReqComponent::AsyncReqComponent(Window* window, std::shared_ptr<HttpReq> req, std::function<void(std::shared_ptr<HttpReq>)> onSuccess, std::function<void()> onCancel)
+	: GuiComponent(window),
+	  mSuccessFunc(onSuccess), mCancelFunc(onCancel), mTime(0), mRequest(req)
 {
-	
+
 }
 
 bool AsyncReqComponent::input(InputConfig* config, Input input)
 {
-	if(input.value != 0 && config->isMappedTo("b", input))
-	{
-		if(mCancelFunc)
+	if(input.value != 0 && config->isMappedTo("b", input)) {
+		if(mCancelFunc) {
 			mCancelFunc();
+		}
 
 		delete this;
 	}
@@ -23,8 +23,7 @@ bool AsyncReqComponent::input(InputConfig* config, Input input)
 
 void AsyncReqComponent::update(int deltaTime)
 {
-	if(mRequest->status() != HttpReq::REQ_IN_PROGRESS)
-	{
+	if(mRequest->status() != HttpReq::REQ_IN_PROGRESS) {
 		mSuccessFunc(mRequest);
 		delete this;
 		return;

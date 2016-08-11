@@ -11,13 +11,12 @@
 // static const char* inputName[inputCount] = { "Up", "Down", "Left", "Right", "A", "B", "Start", "Select", "PageUp", "PageDown" };
 // static const bool inputSkippable[inputCount] = { false, false, false, false, false, false, false, false, true, true };
 // static const char* inputDispName[inputCount] = { "UP", "DOWN", "LEFT", "RIGHT", "A", "B", "START", "SELECT", "PAGE UP", "PAGE DOWN" };
-// static const char* inputIcon[inputCount] = { ":/help/dpad_up.svg", ":/help/dpad_down.svg", ":/help/dpad_left.svg", ":/help/dpad_right.svg", 
-// 											":/help/button_a.svg", ":/help/button_b.svg", ":/help/button_start.svg", ":/help/button_select.svg", 
+// static const char* inputIcon[inputCount] = { ":/help/dpad_up.svg", ":/help/dpad_down.svg", ":/help/dpad_left.svg", ":/help/dpad_right.svg",
+// 											":/help/button_a.svg", ":/help/button_b.svg", ":/help/button_start.svg", ":/help/button_select.svg",
 // 											":/help/button_l.svg", ":/help/button_r.svg" };
 
 static const int inputCount = 24;
-static const char* inputName[inputCount] =
-{
+static const char* inputName[inputCount] = {
 	"Up",
 	"Down",
 	"Left",
@@ -43,8 +42,7 @@ static const char* inputName[inputCount] =
 	"RightAnalogLeft",
 	"RightAnalogRight"
 };
-static const bool inputSkippable[inputCount] =
-{
+static const bool inputSkippable[inputCount] = {
 	false,
 	false,
 	false,
@@ -70,8 +68,7 @@ static const bool inputSkippable[inputCount] =
 	true,
 	true
 };
-static const char* inputDispName[inputCount] =
-{
+static const char* inputDispName[inputCount] = {
 	"D-PAD UP",
 	"D-PAD DOWN",
 	"D-PAD LEFT",
@@ -97,8 +94,7 @@ static const char* inputDispName[inputCount] =
 	"RIGHT ANALOG LEFT",
 	"RIGHT ANALOG RIGHT"
 };
-static const char* inputIcon[inputCount] =
-{
+static const char* inputIcon[inputCount] = {
 	":/help/dpad_up.svg",
 	":/help/dpad_down.svg",
 	":/help/dpad_left.svg",
@@ -132,14 +128,15 @@ using namespace Eigen;
 
 #define HOLD_TO_SKIP_MS 1000
 
-GuiInputConfig::GuiInputConfig(Window* window, InputConfig* target, bool reconfigureAll, const std::function<void()>& okCallback) : GuiComponent(window), 
-	mBackground(window, ":/frame.png"), mGrid(window, Vector2i(1, 7)), 
+GuiInputConfig::GuiInputConfig(Window* window, InputConfig* target, bool reconfigureAll, const std::function<void()>& okCallback) : GuiComponent(window),
+	mBackground(window, ":/frame.png"), mGrid(window, Vector2i(1, 7)),
 	mTargetConfig(target), mHoldingInput(false), mBusyAnim(window)
 {
 	LOG(LogInfo) << "Configuring device " << target->getDeviceId() << " (" << target->getDeviceName() << ").";
 
-	if(reconfigureAll)
+	if(reconfigureAll) {
 		target->clear();
+	}
 
 	mConfiguringAll = reconfigureAll;
 	mConfiguringRow = mConfiguringAll;
@@ -152,12 +149,13 @@ GuiInputConfig::GuiInputConfig(Window* window, InputConfig* target, bool reconfi
 
 	mTitle = std::make_shared<TextComponent>(mWindow, "CONFIGURING", Font::get(FONT_SIZE_LARGE), 0x555555FF, ALIGN_CENTER);
 	mGrid.setEntry(mTitle, Vector2i(0, 1), false, true);
-	
+
 	std::stringstream ss;
-	if(target->getDeviceId() == DEVICE_KEYBOARD)
+	if(target->getDeviceId() == DEVICE_KEYBOARD) {
 		ss << "KEYBOARD";
-	else
+	} else {
 		ss << "GAMEPAD " << (target->getDeviceId() + 1);
+	}
 	mSubtitle1 = std::make_shared<TextComponent>(mWindow, strToUpper(ss.str()), Font::get(FONT_SIZE_MEDIUM), 0x555555FF, ALIGN_CENTER);
 	mGrid.setEntry(mSubtitle1, Vector2i(0, 2), false, true);
 
@@ -168,10 +166,9 @@ GuiInputConfig::GuiInputConfig(Window* window, InputConfig* target, bool reconfi
 
 	mList = std::make_shared<ComponentList>(mWindow);
 	mGrid.setEntry(mList, Vector2i(0, 5), true, true);
-	for(int i = 0; i < inputCount; i++)
-	{
+	for(int i = 0; i < inputCount; i++) {
 		ComponentListRow row;
-		
+
 		// icon
 		auto icon = std::make_shared<ImageComponent>(mWindow);
 		icon->setImage(inputIcon[i]);
@@ -192,23 +189,23 @@ GuiInputConfig::GuiInputConfig(Window* window, InputConfig* target, bool reconfi
 		row.addElement(mapping, true);
 		mMappings.push_back(mapping);
 
-		row.input_handler = [this, i, mapping](InputConfig* config, Input input) -> bool
-		{
+		row.input_handler = [this, i, mapping](InputConfig* config, Input input) -> bool {
 			// ignore input not from our target device
 			if(config != mTargetConfig)
+			{
 				return false;
+			}
 
 			// if we're not configuring, start configuring when A is pressed
 			if(!mConfiguringRow)
 			{
-				if(config->isMappedTo("a", input) && input.value)
-				{
+				if(config->isMappedTo("a", input) && input.value) {
 					mList->stopScrolling();
 					mConfiguringRow = true;
 					setPress(mapping);
 					return true;
 				}
-				
+
 				// we're not configuring and they didn't press A to start, so ignore this
 				return false;
 			}
@@ -218,8 +215,9 @@ GuiInputConfig::GuiInputConfig(Window* window, InputConfig* target, bool reconfi
 			{
 				// input down
 				// if we're already holding something, ignore this, otherwise plan to map this input
-				if(mHoldingInput)
+				if(mHoldingInput) {
 					return true;
+				}
 
 				mHoldingInput = true;
 				mHeldInput = input;
@@ -227,16 +225,20 @@ GuiInputConfig::GuiInputConfig(Window* window, InputConfig* target, bool reconfi
 				mHeldInputId = i;
 
 				return true;
-			}else{
+			} else{
 				// input up
 				// make sure we were holding something and we let go of what we were previously holding
 				if(!mHoldingInput || mHeldInput.device != input.device || mHeldInput.id != input.id || mHeldInput.type != input.type)
+				{
 					return true;
+				}
 
 				mHoldingInput = false;
 
 				if(assign(mHeldInput, i))
-					rowDone(); // if successful, move cursor/stop configuring - if not, we'll just try again
+				{
+					rowDone();    // if successful, move cursor/stop configuring - if not, we'll just try again
+				}
 
 				return true;
 			}
@@ -252,16 +254,17 @@ GuiInputConfig::GuiInputConfig(Window* window, InputConfig* target, bool reconfi
 	});
 
 	// make the first one say "PRESS ANYTHING" if we're re-configuring everything
-	if(mConfiguringAll)
+	if(mConfiguringAll) {
 		setPress(mMappings.front());
+	}
 
 	// buttons
 	std::vector< std::shared_ptr<ButtonComponent> > buttons;
-	buttons.push_back(std::make_shared<ButtonComponent>(mWindow, "OK", "ok", [this, okCallback] { 
+	buttons.push_back(std::make_shared<ButtonComponent>(mWindow, "OK", "ok", [this, okCallback] {
 		InputManager::getInstance()->writeDeviceConfig(mTargetConfig); // save
 		if(okCallback)
 			okCallback();
-		delete this; 
+		delete this;
 	}));
 	mButtonGrid = makeButtonGrid(mWindow, buttons);
 	mGrid.setEntry(mButtonGrid, Vector2i(0, 6), true, false);
@@ -290,21 +293,18 @@ void GuiInputConfig::onSizeChanged()
 
 void GuiInputConfig::update(int deltaTime)
 {
-	if(mConfiguringRow && mHoldingInput && inputSkippable[mHeldInputId])
-	{
+	if(mConfiguringRow && mHoldingInput && inputSkippable[mHeldInputId]) {
 		int prevSec = mHeldTime / 1000;
 		mHeldTime += deltaTime;
 		int curSec = mHeldTime / 1000;
 
-		if(mHeldTime >= HOLD_TO_SKIP_MS)
-		{
+		if(mHeldTime >= HOLD_TO_SKIP_MS) {
 			setNotDefined(mMappings.at(mHeldInputId));
 			clearAssignment(mHeldInputId);
 			mHoldingInput = false;
 			rowDone();
-		}else{
-			if(prevSec != curSec)
-			{
+		} else {
+			if(prevSec != curSec) {
 				// crossed the second boundary, update text
 				const auto& text = mMappings.at(mHeldInputId);
 				std::stringstream ss;
@@ -316,23 +316,21 @@ void GuiInputConfig::update(int deltaTime)
 	}
 }
 
-// move cursor to the next thing if we're configuring all, 
+// move cursor to the next thing if we're configuring all,
 // or come out of "configure mode" if we were only configuring one row
 void GuiInputConfig::rowDone()
 {
-	if(mConfiguringAll)
-	{
-		if(!mList->moveCursor(1)) // try to move to the next one
-		{
+	if(mConfiguringAll) {
+		if(!mList->moveCursor(1)) { // try to move to the next one
 			// at bottom of list, done
 			mConfiguringAll = false;
 			mConfiguringRow = false;
 			mGrid.moveCursor(Vector2i(0, 1));
-		}else{
+		} else {
 			// on another one
 			setPress(mMappings.at(mList->getCursorId()));
 		}
-	}else{
+	} else {
 		// only configuring one row, so stop
 		mConfiguringRow = false;
 	}
@@ -368,14 +366,13 @@ bool GuiInputConfig::assign(Input input, int inputId)
 
 	// if this input is mapped to something other than "nothing" or the current row, error
 	// (if it's the same as what it was before, allow it)
-	if(mTargetConfig->getMappedTo(input).size() > 0 && !mTargetConfig->isMappedTo(inputName[inputId], input))
-	{
+	if(mTargetConfig->getMappedTo(input).size() > 0 && !mTargetConfig->isMappedTo(inputName[inputId], input)) {
 		error(mMappings.at(inputId), "Already mapped!");
 		return false;
 	}
 
 	setAssignedTo(mMappings.at(inputId), input);
-	
+
 	input.configured = true;
 	mTargetConfig->mapInput(inputName[inputId], input);
 
